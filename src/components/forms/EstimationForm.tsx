@@ -38,10 +38,16 @@ export function EstimationForm() {
 		if (parsed.city) setCity(parsed.city);
 	};
 
-	// Step 2 states
-	const [surface, setSurface] = useState("");
-	const [propertyType, setPropertyType] = useState("");
-	const [rooms, setRooms] = useState("");
+// Step 2 states
+const [surface, setSurface] = useState("");
+const [propertyType, setPropertyType] = useState("");
+const [rooms, setRooms] = useState("");
+const [condition, setCondition] = useState("");
+const [outdoorSpaces, setOutdoorSpaces] = useState<string[]>([]);
+const [parking, setParking] = useState("");
+const [yearBuilt, setYearBuilt] = useState("");
+const [occupation, setOccupation] = useState("");
+const [urgency, setUrgency] = useState("");
 
 	// Step 3 states
 	const [firstname, setFirstname] = useState("");
@@ -72,11 +78,13 @@ export function EstimationForm() {
 		/^[a-zA-ZÀ-ÿ\s-]+$/.test(city.trim()) && city.trim().length > 2;
 	const isValidSurface = (surface: string) =>
 		/^\d+$/.test(surface) && Number(surface) > 5;
-	const isValidPropertyType = (type: string) =>
-		["maison", "appartement", "terrain", "autre"].includes(type);
-	const isValidRooms = (rooms: string) =>
-		/^\d+$/.test(rooms) && Number(rooms) >= 0;
-	const isValidName = (name: string) => /^[a-zA-ZÀ-ÿ\s-]+$/.test(name.trim());
+const isValidPropertyType = (type: string) =>
+        ["maison", "appartement", "terrain", "autre"].includes(type);
+const isValidRooms = (rooms: string) =>
+        /^\d+$/.test(rooms) && Number(rooms) >= 0;
+const isValidCondition = (c: string) => c.trim().length > 0;
+const isValidYearBuilt = (y: string) => y === "" || /^\d{4}$/.test(y.trim());
+const isValidName = (name: string) => /^[a-zA-ZÀ-ÿ\s-]+$/.test(name.trim());
 	const isValidEmail = (email: string) =>
 		/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 	const isValidPhone = (phone: string) =>
@@ -85,19 +93,26 @@ export function EstimationForm() {
 	const addressValid = isValidAddress(address);
 	const postcodeValid = isValidPostcode(postcode);
 	const cityValid = isValidCity(city);
-	const surfaceValid = isValidSurface(surface);
-	const propertyTypeValid = isValidPropertyType(propertyType);
-	const roomsValid = isValidRooms(rooms);
-	const firstnameValid = isValidName(firstname);
-	const lastnameValid = isValidName(lastname);
+const surfaceValid = isValidSurface(surface);
+const propertyTypeValid = isValidPropertyType(propertyType);
+const roomsValid = isValidRooms(rooms);
+const conditionValid = isValidCondition(condition);
+const yearBuiltValid = isValidYearBuilt(yearBuilt);
+const firstnameValid = isValidName(firstname);
+const lastnameValid = isValidName(lastname);
 	const emailValid = isValidEmail(email);
 	const phoneValid = isValidPhone(phone);
 
 	// Validation checks for each step
-	const isStep1Valid = addressValid && postcodeValid && cityValid;
-	const isStep2Valid = surfaceValid && propertyTypeValid && roomsValid;
-	const isStep3Valid =
-		firstnameValid && lastnameValid && emailValid && phoneValid && consent;
+const isStep1Valid = addressValid && postcodeValid && cityValid;
+const isStep2Valid =
+  surfaceValid &&
+  propertyTypeValid &&
+  roomsValid &&
+  conditionValid &&
+  yearBuiltValid;
+const isStep3Valid =
+        firstnameValid && lastnameValid && emailValid && phoneValid && consent;
 
 	useEffect(() => {
 		const fetchSuggestions = async () => {
@@ -143,18 +158,24 @@ export function EstimationForm() {
 		e.preventDefault();
 		if (!consent) return alert("Merci de cocher la case de consentement.");
 
-		const data = {
-			address,
-			postcode,
-			city,
-			surface,
-			propertyType,
-			rooms,
-			firstname,
-			lastname,
-			email,
-			phone,
-		};
+        const data = {
+                address,
+                postcode,
+                city,
+                surface,
+                propertyType,
+                rooms,
+                condition,
+                outdoorSpaces,
+                parking,
+                yearBuilt,
+                occupation,
+                urgency,
+                firstname,
+                lastname,
+                email,
+                phone,
+        };
 
 		console.log("Soumission complète", data);
 		// TODO : envoyer à backend ou email
@@ -195,22 +216,36 @@ export function EstimationForm() {
 						/>
 					)}
 					{step === 2 && (
-						<PropertyStep
-							surface={surface}
-							propertyType={propertyType}
-							rooms={rooms}
-							surfaceValid={surfaceValid}
-							propertyTypeValid={propertyTypeValid}
-							roomsValid={roomsValid}
-							touched={touched}
-							setSurface={setSurface}
-							setPropertyType={setPropertyType}
-							setRooms={setRooms}
-							setTouched={setTouched}
-							onBack={() => setStep(1)}
-							onNext={() => setStep(3)}
-							isValid={isStep2Valid}
-						/>
+                                                <PropertyStep
+                                                        surface={surface}
+                                                        propertyType={propertyType}
+                                                        rooms={rooms}
+                                                        condition={condition}
+                                                        outdoorSpaces={outdoorSpaces}
+                                                        parking={parking}
+                                                        yearBuilt={yearBuilt}
+                                                        occupation={occupation}
+                                                        urgency={urgency}
+                                                        surfaceValid={surfaceValid}
+                                                        propertyTypeValid={propertyTypeValid}
+                                                        roomsValid={roomsValid}
+                                                        conditionValid={conditionValid}
+                                                        yearBuiltValid={yearBuiltValid}
+                                                        touched={touched}
+                                                        setSurface={setSurface}
+                                                        setPropertyType={setPropertyType}
+                                                        setRooms={setRooms}
+                                                        setCondition={setCondition}
+                                                        setOutdoorSpaces={setOutdoorSpaces}
+                                                        setParking={setParking}
+                                                        setYearBuilt={setYearBuilt}
+                                                        setOccupation={setOccupation}
+                                                        setUrgency={setUrgency}
+                                                        setTouched={setTouched}
+                                                        onBack={() => setStep(1)}
+                                                        onNext={() => setStep(3)}
+                                                        isValid={isStep2Valid}
+                                                />
 					)}
 					{step === 3 && (
 						<ContactStep
