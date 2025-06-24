@@ -19,6 +19,7 @@ interface AddressStepProps {
   setAddress: (v: string) => void;
   setPostcode: (v: string) => void;
   setCity: (v: string) => void;
+  onAddressBlur: () => void;
   setTouched: React.Dispatch<React.SetStateAction<Touched>>;
   onSuggestionClick: (index: number) => void;
   onNext: () => void;
@@ -37,6 +38,7 @@ export function AddressStep({
   setAddress,
   setPostcode,
   setCity,
+  onAddressBlur,
   setTouched,
   onSuggestionClick,
   onNext,
@@ -64,7 +66,10 @@ export function AddressStep({
           id="address"
           value={address}
           onChange={(e) => setAddress(e.target.value)}
-          onBlur={() => setTouched({ ...touched, address: true })}
+          onBlur={() => {
+            onAddressBlur();
+            setTouched({ ...touched, address: true });
+          }}
           placeholder="12 rue de la paix"
           autoComplete="street-address"
           aria-invalid={touched.address && !addressValid}
