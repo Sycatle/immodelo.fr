@@ -15,6 +15,14 @@ import {
 } from "@/components/ui/select";
 import { motion, AnimatePresence } from "framer-motion";
 
+interface AddressFeature {
+  properties: {
+    label: string;
+    postcode?: string;
+    city?: string;
+  };
+}
+
 export function EstimationForm() {
 	const [step, setStep] = useState(1);
 
@@ -23,7 +31,7 @@ export function EstimationForm() {
 	const [postcode, setPostcode] = useState("");
 	const [city, setCity] = useState("");
 	const [suggestions, setSuggestions] = useState<string[]>([]);
-	const [features, setFeatures] = useState<any[]>([]);
+        const [features, setFeatures] = useState<AddressFeature[]>([]);
 
 	// Step 2 states
 	const [surface, setSurface] = useState("");
@@ -95,17 +103,19 @@ const [consent, setConsent] = useState(false);
 				)}&autocomplete=1&limit=5` // Limite à 5 suggestions
 			);
 			const data = await res.json();
-			setFeatures(data.features);
-			setSuggestions(data.features.map((f: any) => f.properties.label));
+                        setFeatures(data.features as AddressFeature[]);
+                        setSuggestions(
+                                (data.features as AddressFeature[]).map((f) => f.properties.label)
+                        );
 		};
 
 		const timeout = setTimeout(fetchSuggestions, 300);
 		return () => clearTimeout(timeout);
 	}, [address]);
 
-	const handleSuggestionClick = (index: number) => {
-		const selected = features[index];
-		const props = selected.properties;
+        const handleSuggestionClick = (index: number) => {
+                const selected = features[index];
+                const props = selected.properties;
 		setAddress(props.label);
 		setPostcode(props.postcode || "");
 		setCity(props.city || "");
@@ -141,7 +151,7 @@ const [consent, setConsent] = useState(false);
 			<motion.div
 				className="absolute top-0 left-0 h-1 bg-orange-500"
 				initial={{ width: 0 }}
-				animate={{ width: `${(step - 1) * 33.33}%` }}
+                                animate={{ width: `${((step - 1) / 2) * 100}%` }}
 				exit={{ width: 0 }}
 				transition={{ duration: 0.4, ease: "easeInOut" }}
 			/>
@@ -474,7 +484,7 @@ const [consent, setConsent] = useState(false);
                                                                 <label
                                                                         htmlFor="consent"
                                                                         className="text-sm text-gray-700 leading-snug">
-                                                                        J'autorise Immodelo à me contacter. <br />
+                                                                        J&apos;autorise Immodelo à me contacter. <br />
                                                                         <span className="text-gray-500">
                                                                                Mes informations ne sont jamais transmises à des tiers.
                                                                         </span>
