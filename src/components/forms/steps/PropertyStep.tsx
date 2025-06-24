@@ -68,6 +68,7 @@ export function PropertyStep({
         >
           <SelectTrigger
             aria-invalid={touched.propertyType && !propertyTypeValid}
+            aria-describedby={touched.propertyType && !propertyTypeValid ? "propertyType-error" : undefined}
             className={cn(touched.propertyType && !propertyTypeValid && "border-red-500")}
           >
             <SelectValue placeholder="Sélectionnez un type" />
@@ -80,7 +81,7 @@ export function PropertyStep({
           </SelectContent>
         </Select>
         {touched.propertyType && !propertyTypeValid && (
-          <p className="text-sm text-red-500 mt-1">Type de bien invalide</p>
+          <p id="propertyType-error" role="alert" className="text-sm text-red-500 mt-1">Type de bien invalide</p>
         )}
       </div>
       <div>
@@ -94,12 +95,14 @@ export function PropertyStep({
           onChange={(e) => setSurface(e.target.value)}
           onBlur={() => setTouched({ ...touched, surface: true })}
           placeholder="90"
+          autoComplete="off"
           aria-invalid={touched.surface && !surfaceValid}
+          aria-describedby={touched.surface && !surfaceValid ? "surface-error" : undefined}
           className={cn(touched.surface && !surfaceValid && "border-red-500")}
           required
         />
         {touched.surface && !surfaceValid && (
-          <p className="text-sm text-red-500 mt-1">Surface invalide</p>
+          <p id="surface-error" role="alert" className="text-sm text-red-500 mt-1">Surface invalide</p>
         )}
       </div>
       <div>
@@ -113,12 +116,14 @@ export function PropertyStep({
           onChange={(e) => setRooms(e.target.value)}
           onBlur={() => setTouched({ ...touched, rooms: true })}
           placeholder="ex : 3"
+          autoComplete="off"
           aria-invalid={touched.rooms && !roomsValid}
+          aria-describedby={touched.rooms && !roomsValid ? "rooms-error" : undefined}
           className={cn(touched.rooms && !roomsValid && "border-red-500")}
           required
         />
         {touched.rooms && !roomsValid && (
-          <p className="text-sm text-red-500 mt-1">Nombre invalide</p>
+          <p id="rooms-error" role="alert" className="text-sm text-red-500 mt-1">Nombre invalide</p>
         )}
       </div>
       <div className="flex justify-between gap-4">
