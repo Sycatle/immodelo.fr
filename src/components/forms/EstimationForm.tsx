@@ -81,19 +81,30 @@ const [consent, setConsent] = useState(false);
                firstnameValid && lastnameValid && emailValid && phoneValid && consent;
 
 	useEffect(() => {
-		const fetchSuggestions = async () => {
-			if (address.length < 3) return;
-			const res = await fetch(
-				`https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(
-					address,
-				)}&autocomplete=1&limit=5` // Limite à 5 suggestions
-			);
-			const data = await res.json();
-                        setFeatures(data.features as AddressFeature[]);
-                        setSuggestions(
-                                (data.features as AddressFeature[]).map((f) => f.properties.label)
-                        );
-		};
+                const fetchSuggestions = async () => {
+                        if (address.length < 3) return;
+                        try {
+                                const res = await fetch(
+                                        `https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(
+                                                address,
+                                        )}&autocomplete=1&limit=5` // Limite à 5 suggestions
+                                );
+                                if (!res.ok) {
+                                        setFeatures([]);
+                                        setSuggestions([]);
+                                        return;
+                                }
+                                const data = await res.json();
+                                const feats = Array.isArray(data.features)
+                                        ? (data.features as AddressFeature[])
+                                        : [];
+                                setFeatures(feats);
+                                setSuggestions(feats.map((f) => f.properties.label));
+                        } catch {
+                                setFeatures([]);
+                                setSuggestions([]);
+                        }
+                };
 
 		const timeout = setTimeout(fetchSuggestions, 300);
 		return () => clearTimeout(timeout);
