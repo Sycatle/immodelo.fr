@@ -135,10 +135,13 @@ const [consent, setConsent] = useState(false);
 
 	return (
 		<Card className="relative shadow-lg duration-300 overflow-hidden">
+
+            {/* First, progress bar must be empty, then a third, then two third then full  */}
+
 			<motion.div
 				className="absolute top-0 left-0 h-1 bg-orange-500"
 				initial={{ width: 0 }}
-				animate={{ width: `${(step / 3) * 100}%` }}
+				animate={{ width: `${(step - 1) * 33.33}%` }}
 				exit={{ width: 0 }}
 				transition={{ duration: 0.4, ease: "easeInOut" }}
 			/>
