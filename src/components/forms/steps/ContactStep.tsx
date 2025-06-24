@@ -72,12 +72,14 @@ export function ContactStep({
             onChange={(e) => setFirstname(e.target.value)}
             onBlur={() => setTouched({ ...touched, firstname: true })}
             placeholder="Jean"
+            autoComplete="given-name"
             aria-invalid={touched.firstname && !firstnameValid}
+            aria-describedby={touched.firstname && !firstnameValid ? "firstname-error" : undefined}
             className={cn(touched.firstname && !firstnameValid && "border-red-500")}
             required
           />
           {touched.firstname && !firstnameValid && (
-            <p className="text-sm text-red-500 mt-1">Prénom invalide</p>
+            <p id="firstname-error" role="alert" className="text-sm text-red-500 mt-1">Prénom invalide</p>
           )}
         </div>
         <div className="w-1/2">
@@ -90,12 +92,14 @@ export function ContactStep({
             onChange={(e) => setLastname(e.target.value)}
             onBlur={() => setTouched({ ...touched, lastname: true })}
             placeholder="Dupont"
+            autoComplete="family-name"
             aria-invalid={touched.lastname && !lastnameValid}
+            aria-describedby={touched.lastname && !lastnameValid ? "lastname-error" : undefined}
             className={cn(touched.lastname && !lastnameValid && "border-red-500")}
             required
           />
           {touched.lastname && !lastnameValid && (
-            <p className="text-sm text-red-500 mt-1">Nom invalide</p>
+            <p id="lastname-error" role="alert" className="text-sm text-red-500 mt-1">Nom invalide</p>
           )}
         </div>
       </div>
@@ -110,12 +114,14 @@ export function ContactStep({
           onChange={(e) => setEmail(e.target.value)}
           onBlur={() => setTouched({ ...touched, email: true })}
           placeholder="jean.dupont@email.com"
+          autoComplete="email"
           aria-invalid={touched.email && !emailValid}
+          aria-describedby={touched.email && !emailValid ? "email-error" : undefined}
           className={cn(touched.email && !emailValid && "border-red-500")}
           required
         />
         {touched.email && !emailValid && (
-          <p className="text-sm text-red-500 mt-1">Email invalide</p>
+          <p id="email-error" role="alert" className="text-sm text-red-500 mt-1">Email invalide</p>
         )}
       </div>
       <div>
@@ -129,12 +135,14 @@ export function ContactStep({
           onChange={(e) => setPhone(e.target.value)}
           onBlur={() => setTouched({ ...touched, phone: true })}
           placeholder="06 00 00 00 00"
+          autoComplete="tel"
           aria-invalid={touched.phone && !phoneValid}
+          aria-describedby={touched.phone && !phoneValid ? "phone-error" : undefined}
           className={cn(touched.phone && !phoneValid && "border-red-500")}
           required
         />
         {touched.phone && !phoneValid && (
-          <p className="text-sm text-red-500 mt-1">Téléphone invalide</p>
+          <p id="phone-error" role="alert" className="text-sm text-red-500 mt-1">Téléphone invalide</p>
         )}
       </div>
       <div className="flex items-start gap-2">
@@ -147,6 +155,7 @@ export function ContactStep({
             setTouched({ ...touched, consent: true });
           }}
           aria-invalid={touched.consent && !consent}
+          aria-describedby={touched.consent && !consent ? "consent-error" : undefined}
           className={cn("mt-1", touched.consent && !consent && "border-red-500")}
           required
         />
@@ -157,7 +166,7 @@ export function ContactStep({
           </span>
         </label>
         {touched.consent && !consent && (
-          <p className="text-sm text-red-500 mt-1">Consentement requis</p>
+          <p id="consent-error" role="alert" className="text-sm text-red-500 mt-1">Consentement requis</p>
         )}
       </div>
       <div className="flex justify-between gap-4">
