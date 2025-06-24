@@ -17,7 +17,26 @@ export function EstimationForm() {
 	const [postcode, setPostcode] = useState("");
 	const [city, setCity] = useState("");
 	const [suggestions, setSuggestions] = useState<string[]>([]);
-        const [features, setFeatures] = useState<AddressFeature[]>([]);
+  const [features, setFeatures] = useState<AddressFeature[]>([]);
+
+  const splitAddress = (
+    value: string,
+  ): { street: string; postcode: string; city: string } => {
+    const regex = /^(.*?)(\d{5})\s+(.+)$/;
+    const match = value.trim().match(regex);
+    if (match) {
+      const [, street, pc, ct] = match;
+      return { street: street.trim(), postcode: pc, city: ct.trim() };
+    }
+    return { street: value.trim(), postcode: "", city: "" };
+  };
+
+  const handleAddressBlur = () => {
+    const parsed = splitAddress(address);
+    setAddress(parsed.street);
+    if (parsed.postcode) setPostcode(parsed.postcode);
+    if (parsed.city) setCity(parsed.city);
+  };
 
 	// Step 2 states
 	const [surface, setSurface] = useState("");
@@ -113,11 +132,12 @@ const [consent, setConsent] = useState(false);
         const handleSuggestionClick = (index: number) => {
                 const selected = features[index];
                 const props = selected.properties;
-		setAddress(props.label);
-		setPostcode(props.postcode || "");
-		setCity(props.city || "");
-		setSuggestions([]);
-	};
+                const parsed = splitAddress(props.label);
+                setAddress(parsed.street);
+                setPostcode(props.postcode || parsed.postcode);
+                setCity(props.city || parsed.city);
+                setSuggestions([]);
+        };
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
@@ -167,6 +187,7 @@ const [consent, setConsent] = useState(false);
                             setAddress={setAddress}
                             setPostcode={setPostcode}
                             setCity={setCity}
+                            onAddressBlur={handleAddressBlur}
                             setTouched={setTouched}
                             onSuggestionClick={handleSuggestionClick}
                             onNext={() => setStep(2)}
