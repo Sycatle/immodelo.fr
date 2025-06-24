@@ -4,7 +4,13 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import type { Touched } from "../types";
 
@@ -68,8 +74,14 @@ export function PropertyStep({
         >
           <SelectTrigger
             aria-invalid={touched.propertyType && !propertyTypeValid}
-            aria-describedby={touched.propertyType && !propertyTypeValid ? "propertyType-error" : undefined}
-            className={cn(touched.propertyType && !propertyTypeValid && "border-red-500")}
+            aria-describedby={
+              touched.propertyType && !propertyTypeValid
+                ? "propertyType-error"
+                : undefined
+            }
+            className={cn(
+              touched.propertyType && !propertyTypeValid && "border-red-500"
+            )}
           >
             <SelectValue placeholder="Sélectionnez un type" />
           </SelectTrigger>
@@ -81,7 +93,13 @@ export function PropertyStep({
           </SelectContent>
         </Select>
         {touched.propertyType && !propertyTypeValid && (
-          <p id="propertyType-error" role="alert" className="text-sm text-red-500 mt-1">Type de bien invalide</p>
+          <p
+            id="propertyType-error"
+            role="alert"
+            className="text-sm text-red-500 mt-1"
+          >
+            Type de bien invalide
+          </p>
         )}
       </div>
       <div>
@@ -97,12 +115,20 @@ export function PropertyStep({
           placeholder="90"
           autoComplete="off"
           aria-invalid={touched.surface && !surfaceValid}
-          aria-describedby={touched.surface && !surfaceValid ? "surface-error" : undefined}
+          aria-describedby={
+            touched.surface && !surfaceValid ? "surface-error" : undefined
+          }
           className={cn(touched.surface && !surfaceValid && "border-red-500")}
           required
         />
         {touched.surface && !surfaceValid && (
-          <p id="surface-error" role="alert" className="text-sm text-red-500 mt-1">Surface invalide</p>
+          <p
+            id="surface-error"
+            role="alert"
+            className="text-sm text-red-500 mt-1"
+          >
+            Surface invalide
+          </p>
         )}
       </div>
       <div>
@@ -118,16 +144,29 @@ export function PropertyStep({
           placeholder="ex : 3"
           autoComplete="off"
           aria-invalid={touched.rooms && !roomsValid}
-          aria-describedby={touched.rooms && !roomsValid ? "rooms-error" : undefined}
+          aria-describedby={
+            touched.rooms && !roomsValid ? "rooms-error" : undefined
+          }
           className={cn(touched.rooms && !roomsValid && "border-red-500")}
           required
         />
         {touched.rooms && !roomsValid && (
-          <p id="rooms-error" role="alert" className="text-sm text-red-500 mt-1">Nombre invalide</p>
+          <p
+            id="rooms-error"
+            role="alert"
+            className="text-sm text-red-500 mt-1"
+          >
+            Nombre invalide
+          </p>
         )}
       </div>
       <div className="flex justify-between gap-4">
-        <Button type="button" variant="outline" onClick={onBack} className="w-1/2">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onBack}
+          className="w-1/2"
+        >
           Retour
         </Button>
         <Button

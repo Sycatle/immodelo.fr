@@ -73,12 +73,20 @@ export function AddressStep({
           placeholder="12 rue de la paix"
           autoComplete="street-address"
           aria-invalid={touched.address && !addressValid}
-          aria-describedby={touched.address && !addressValid ? "address-error" : undefined}
+          aria-describedby={
+            touched.address && !addressValid ? "address-error" : undefined
+          }
           className={cn(touched.address && !addressValid && "border-red-500")}
           required
         />
         {touched.address && !addressValid && (
-          <p id="address-error" role="alert" className="text-sm text-red-500 mt-1">Adresse invalide</p>
+          <p
+            id="address-error"
+            role="alert"
+            className="text-sm text-red-500 mt-1"
+          >
+            Adresse invalide
+          </p>
         )}
         {suggestions.length > 0 && (
           <ul className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-md shadow max-h-48 overflow-auto">
@@ -107,12 +115,22 @@ export function AddressStep({
             placeholder="72000"
             autoComplete="postal-code"
             aria-invalid={touched.postcode && !postcodeValid}
-            aria-describedby={touched.postcode && !postcodeValid ? "postcode-error" : undefined}
-            className={cn(touched.postcode && !postcodeValid && "border-red-500")}
+            aria-describedby={
+              touched.postcode && !postcodeValid ? "postcode-error" : undefined
+            }
+            className={cn(
+              touched.postcode && !postcodeValid && "border-red-500"
+            )}
             required
           />
           {touched.postcode && !postcodeValid && (
-            <p id="postcode-error" role="alert" className="text-sm text-red-500 mt-1">Code postal invalide</p>
+            <p
+              id="postcode-error"
+              role="alert"
+              className="text-sm text-red-500 mt-1"
+            >
+              Code postal invalide
+            </p>
           )}
         </div>
         <div className="w-1/2">
@@ -127,12 +145,20 @@ export function AddressStep({
             placeholder="Le Mans"
             autoComplete="address-level2"
             aria-invalid={touched.city && !cityValid}
-            aria-describedby={touched.city && !cityValid ? "city-error" : undefined}
+            aria-describedby={
+              touched.city && !cityValid ? "city-error" : undefined
+            }
             className={cn(touched.city && !cityValid && "border-red-500")}
             required
           />
           {touched.city && !cityValid && (
-            <p id="city-error" role="alert" className="text-sm text-red-500 mt-1">Ville invalide</p>
+            <p
+              id="city-error"
+              role="alert"
+              className="text-sm text-red-500 mt-1"
+            >
+              Ville invalide
+            </p>
           )}
         </div>
       </div>

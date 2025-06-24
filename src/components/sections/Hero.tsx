@@ -9,8 +9,8 @@ export default function Hero() {
             Estimez votre maison rapidement en ligne.
           </h1>
           <p className="text-gray-700 text-lg mt-4 max-w-xl leading-relaxed">
-            Vous habitez Le Mans et sa périphérie ? Profitez de mon expertise pour
-            estimer et vendre votre maison rapidement.
+            Vous habitez Le Mans et sa périphérie ? Profitez de mon expertise
+            pour estimer et vendre votre maison rapidement.
           </p>
         </div>
 
