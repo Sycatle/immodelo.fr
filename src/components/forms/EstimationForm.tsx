@@ -2,26 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
-import { motion, AnimatePresence } from "framer-motion";
-
-interface AddressFeature {
-  properties: {
-    label: string;
-    postcode?: string;
-    city?: string;
-  };
-}
+import { AnimatePresence } from "framer-motion";
+import { ProgressBar } from "./ProgressBar";
+import { AddressStep } from "./steps/AddressStep";
+import { PropertyStep } from "./steps/PropertyStep";
+import { ContactStep } from "./steps/ContactStep";
+import type { Touched, AddressFeature } from "./types";
 
 export function EstimationForm() {
 	const [step, setStep] = useState(1);
@@ -45,7 +31,7 @@ export function EstimationForm() {
 const [phone, setPhone] = useState("");
 const [consent, setConsent] = useState(false);
 
-       const [touched, setTouched] = useState({
+       const [touched, setTouched] = useState<Touched>({
                address: false,
                postcode: false,
                city: false,
@@ -143,376 +129,82 @@ const [consent, setConsent] = useState(false);
 		// TODO : envoyer à backend ou email
 	};
 
-	return (
-		<Card className="relative shadow-lg duration-300 overflow-hidden">
-
-            {/* First, progress bar must be empty, then a third, then two third then full  */}
-
-			<motion.div
-				className="absolute top-0 left-0 h-1 bg-orange-500"
-				initial={{ width: 0 }}
-                                animate={{ width: `${((step - 1) / 2) * 100}%` }}
-				exit={{ width: 0 }}
-				transition={{ duration: 0.4, ease: "easeInOut" }}
-			/>
-
-			<CardHeader>
-				<CardTitle className="text-xl font-semibold text-gray-900">
-					Obtenir mon estimation
-				</CardTitle>
-			</CardHeader>
-			<CardContent className="relative duration-300">
-				<p className="text-gray-700 mb-4">
-					Remplissez ce formulaire pour recevoir une estimation gratuite de
-					votre bien immobilier.
-				</p>
-
-				<AnimatePresence mode="wait">
-					{step === 1 && (
-						<motion.form
-							key="step1"
-							layout
-							initial={{ x: 50, opacity: 0 }}
-							animate={{ x: 0, opacity: 1 }}
-							exit={{ x: -50, opacity: 0 }}
-							transition={{ duration: 0.3 }}
-							className="space-y-4"
-							onSubmit={(e) => {
-								e.preventDefault();
-								setStep(2);
-							}}>
-							<div>
-								<Label
-									className="p-1"
-									htmlFor="address">
-									Adresse
-								</Label>
-                                                                <Input
-                                                                        id="address"
-                                                                        value={address}
-                                                                        onChange={(e) => setAddress(e.target.value)}
-                                                                        onBlur={() => setTouched({ ...touched, address: true })}
-                                                                        placeholder="12 rue de la paix"
-                                                                        autoComplete="off"
-                                                                        aria-invalid={touched.address && !addressValid}
-                                                                        className={cn(touched.address && !addressValid && "border-red-500")}
-                                                                        required
-                                                                />
-                                                                {touched.address && !addressValid && (
-                                                                        <p className="text-sm text-red-500 mt-1">
-                                                                                Adresse invalide
-                                                                        </p>
-                                                                )}
-								{suggestions.length > 0 && (
-									<ul className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-md shadow max-h-48 overflow-auto">
-										{suggestions.map((s, idx) => (
-											<li
-												key={idx}
-												className="px-4 py-2 text-sm text-gray-800 hover:bg-gray-100 cursor-pointer"
-												onClick={() => handleSuggestionClick(idx)}>
-												{s}
-											</li>
-										))}
-									</ul>
-								)}
-							</div>
-							<div className="flex gap-4">
-								<div className="w-1/2">
-									<Label
-										className="p-1"
-										htmlFor="postcode">
-										Code postal
-									</Label>
-                                                                        <Input
-                                                                               id="postcode"
-                                                                               value={postcode}
-                                                                               onChange={(e) => setPostcode(e.target.value)}
-                                                                               onBlur={() => setTouched({ ...touched, postcode: true })}
-                                                                               placeholder="72000"
-                                                                               aria-invalid={touched.postcode && !postcodeValid}
-                                                                               className={cn(touched.postcode && !postcodeValid && "border-red-500")}
-                                                                               required
-                                                                        />
-                                                                        {touched.postcode && !postcodeValid && (
-                                                                               <p className="text-sm text-red-500 mt-1">Code postal invalide</p>
-                                                                        )}
-								</div>
-								<div className="w-1/2">
-									<Label
-										className="p-1"
-										htmlFor="city">
-										Ville
-									</Label>
-                                                                        <Input
-                                                                               id="city"
-                                                                               value={city}
-                                                                               onChange={(e) => setCity(e.target.value)}
-                                                                               onBlur={() => setTouched({ ...touched, city: true })}
-                                                                               placeholder="Le Mans"
-                                                                               aria-invalid={touched.city && !cityValid}
-                                                                               className={cn(touched.city && !cityValid && "border-red-500")}
-                                                                               required
-                                                                        />
-                                                                        {touched.city && !cityValid && (
-                                                                               <p className="text-sm text-red-500 mt-1">Ville invalide</p>
-                                                                        )}
-                                                               </div>
-                                                       </div>
-
-							<Button
-								type="submit"
-								disabled={!isStep1Valid}
-								className="w-full bg-orange-500 hover:bg-orange-600 text-white">
-								Étape suivante
-							</Button>
-						</motion.form>
-					)}
-
-					{step === 2 && (
-						<motion.form
-							key="step2"
-							layout
-							initial={{ x: 50, opacity: 0 }}
-							animate={{ x: 0, opacity: 1 }}
-							exit={{ x: -50, opacity: 0 }}
-							transition={{ duration: 0.3 }}
-							className="space-y-4"
-							onSubmit={handleSubmit}>
-							<div>
-								<Label
-									className="p-1"
-									htmlFor="propertyType">
-									Type de bien
-								</Label>
-                                                                <Select
-                                                                        value={propertyType}
-                                                                        onValueChange={(v) => {
-                                                                                setPropertyType(v);
-                                                                                setTouched({ ...touched, propertyType: true });
-                                                                        }}>
-                                                                        <SelectTrigger
-                                                                               aria-invalid={touched.propertyType && !propertyTypeValid}
-                                                                               className={cn(touched.propertyType && !propertyTypeValid && "border-red-500")}
-                                                                        >
-                                                                               <SelectValue placeholder="Sélectionnez un type" />
-                                                                       </SelectTrigger>
-									<SelectContent>
-										<SelectItem value="maison">Maison</SelectItem>
-										<SelectItem value="appartement">Appartement</SelectItem>
-										<SelectItem value="terrain">Terrain</SelectItem>
-										<SelectItem value="autre">Autre</SelectItem>
-									</SelectContent>
-                                                                </Select>
-                                                                {touched.propertyType && !propertyTypeValid && (
-                                                                        <p className="text-sm text-red-500 mt-1">Type de bien invalide</p>
-                                                                )}
-                                                       </div>
-
-							<div>
-								<Label
-									className="p-1"
-									htmlFor="surface">
-									Surface habitable (m²)
-								</Label>
-                                                                <Input
-                                                                        id="surface"
-                                                                        type="number"
-                                                                        value={surface}
-                                                                        onChange={(e) => setSurface(e.target.value)}
-                                                                        onBlur={() => setTouched({ ...touched, surface: true })}
-                                                                        placeholder="90"
-                                                                        aria-invalid={touched.surface && !surfaceValid}
-                                                                        className={cn(touched.surface && !surfaceValid && "border-red-500")}
-                                                                        required
-                                                                />
-                                                                {touched.surface && !surfaceValid && (
-                                                                        <p className="text-sm text-red-500 mt-1">Surface invalide</p>
-                                                                )}
-                                                        </div>
-
-							<div>
-								<Label
-									className="p-1"
-									htmlFor="rooms">
-									Nombre de chambres
-								</Label>
-                                                                <Input
-                                                                        id="rooms"
-                                                                        type="number"
-                                                                        value={rooms}
-                                                                        onChange={(e) => setRooms(e.target.value)}
-                                                                        onBlur={() => setTouched({ ...touched, rooms: true })}
-                                                                        placeholder="ex : 3"
-                                                                        aria-invalid={touched.rooms && !roomsValid}
-                                                                        className={cn(touched.rooms && !roomsValid && "border-red-500")}
-                                                                        required
-                                                                />
-                                                                {touched.rooms && !roomsValid && (
-                                                                        <p className="text-sm text-red-500 mt-1">Nombre invalide</p>
-                                                                )}
-                                                        </div>
-
-							<div className="flex justify-between gap-4">
-								<Button
-									type="button"
-									variant="outline"
-									onClick={() => setStep(1)}
-									className="w-1/2">
-									Retour
-								</Button>
-								<Button
-									type="button"
-									onClick={() => setStep(3)}
-									disabled={!isStep2Valid}
-									className="w-1/2 bg-orange-500 hover:bg-orange-600 text-white">
-									Étape suivante
-								</Button>
-							</div>
-						</motion.form>
-					)}
-
-					{step === 3 && (
-						<motion.form
-							key="step3"
-							layout
-							initial={{ x: 50, opacity: 0 }}
-							animate={{ x: 0, opacity: 1 }}
-							exit={{ x: -50, opacity: 0 }}
-							transition={{ duration: 0.3 }}
-							className="space-y-4"
-							onSubmit={handleSubmit}>
-							<div className="flex gap-4">
-								<div className="w-1/2">
-									<Label
-										className="p-1"
-										htmlFor="firstname">
-										Prénom
-									</Label>
-                                                                        <Input
-                                                                               id="firstname"
-                                                                               value={firstname}
-                                                                               onChange={(e) => setFirstname(e.target.value)}
-                                                                               onBlur={() => setTouched({ ...touched, firstname: true })}
-                                                                               placeholder="Jean"
-                                                                               aria-invalid={touched.firstname && !firstnameValid}
-                                                                               className={cn(touched.firstname && !firstnameValid && "border-red-500")}
-                                                                               required
-                                                                        />
-                                                                        {touched.firstname && !firstnameValid && (
-                                                                               <p className="text-sm text-red-500 mt-1">Prénom invalide</p>
-                                                                        )}
-								</div>
-								<div className="w-1/2">
-									<Label
-										className="p-1"
-										htmlFor="lastname">
-										Nom
-									</Label>
-                                                                        <Input
-                                                                               id="lastname"
-                                                                               value={lastname}
-                                                                               onChange={(e) => setLastname(e.target.value)}
-                                                                               onBlur={() => setTouched({ ...touched, lastname: true })}
-                                                                               placeholder="Dupont"
-                                                                               aria-invalid={touched.lastname && !lastnameValid}
-                                                                               className={cn(touched.lastname && !lastnameValid && "border-red-500")}
-                                                                               required
-                                                                        />
-                                                                        {touched.lastname && !lastnameValid && (
-                                                                               <p className="text-sm text-red-500 mt-1">Nom invalide</p>
-                                                                        )}
-								</div>
-							</div>
-
-							<div>
-								<Label
-									className="p-1"
-									htmlFor="email">
-									Email
-								</Label>
-                                                                <Input
-                                                                        id="email"
-                                                                        type="email"
-                                                                        value={email}
-                                                                        onChange={(e) => setEmail(e.target.value)}
-                                                                        onBlur={() => setTouched({ ...touched, email: true })}
-                                                                        placeholder="jean.dupont@email.com"
-                                                                        aria-invalid={touched.email && !emailValid}
-                                                                        className={cn(touched.email && !emailValid && "border-red-500")}
-                                                                        required
-                                                                />
-                                                                {touched.email && !emailValid && (
-                                                                        <p className="text-sm text-red-500 mt-1">Email invalide</p>
-                                                                )}
-                                                        </div>
-
-							<div>
-								<Label
-									className="p-1"
-									htmlFor="phone">
-									Téléphone
-								</Label>
-                                                                <Input
-                                                                        id="phone"
-                                                                        type="tel"
-                                                                        value={phone}
-                                                                        onChange={(e) => setPhone(e.target.value)}
-                                                                        onBlur={() => setTouched({ ...touched, phone: true })}
-                                                                        placeholder="06 00 00 00 00"
-                                                                        aria-invalid={touched.phone && !phoneValid}
-                                                                        className={cn(touched.phone && !phoneValid && "border-red-500")}
-                                                                        required
-                                                                />
-                                                                {touched.phone && !phoneValid && (
-                                                                        <p className="text-sm text-red-500 mt-1">Téléphone invalide</p>
-                                                                )}
-                                                        </div>
-
-							<div className="flex items-start gap-2">
-                                                                <input
-                                                                        type="checkbox"
-                                                                        id="consent"
-                                                                        checked={consent}
-                                                                        onChange={(e) => {
-                                                                                setConsent(e.target.checked);
-                                                                                setTouched({ ...touched, consent: true });
-                                                                        }}
-                                                                        aria-invalid={touched.consent && !consent}
-                                                                        className={cn("mt-1", touched.consent && !consent && "border-red-500")}
-                                                                        required
-                                                                />
-                                                                <label
-                                                                        htmlFor="consent"
-                                                                        className="text-sm text-gray-700 leading-snug">
-                                                                        J&apos;autorise Immodelo à me contacter. <br />
-                                                                        <span className="text-gray-500">
-                                                                               Mes informations ne sont jamais transmises à des tiers.
-                                                                        </span>
-                                                                </label>
-                                                                {touched.consent && !consent && (
-                                                                        <p className="text-sm text-red-500 mt-1">Consentement requis</p>
-                                                                )}
-                                                        </div>
-
-							<div className="flex justify-between gap-4">
-								<Button
-									type="button"
-									variant="outline"
-									onClick={() => setStep(2)}
-									className="w-1/2">
-									Retour
-								</Button>
-								<Button
-									type="submit"
-									disabled={!isStep3Valid}
-									className="w-1/2 bg-orange-500 hover:bg-orange-600 text-white">
-									Envoyer
-								</Button>
-							</div>
-						</motion.form>
-					)}
-				</AnimatePresence>
-			</CardContent>
-		</Card>
-	);
+    return (
+        <Card className="relative shadow-lg duration-300 overflow-hidden">
+            <ProgressBar step={step} />
+            <CardHeader>
+                <CardTitle className="text-xl font-semibold text-gray-900">
+                    Obtenir mon estimation
+                </CardTitle>
+            </CardHeader>
+            <CardContent className="relative duration-300">
+                <p className="text-gray-700 mb-4">
+                    Remplissez ce formulaire pour recevoir une estimation gratuite de
+                    votre bien immobilier.
+                </p>
+                <AnimatePresence mode="wait">
+                    {step === 1 && (
+                        <AddressStep
+                            address={address}
+                            postcode={postcode}
+                            city={city}
+                            suggestions={suggestions}
+                            addressValid={addressValid}
+                            postcodeValid={postcodeValid}
+                            cityValid={cityValid}
+                            touched={touched}
+                            setAddress={setAddress}
+                            setPostcode={setPostcode}
+                            setCity={setCity}
+                            setTouched={setTouched}
+                            onSuggestionClick={handleSuggestionClick}
+                            onNext={() => setStep(2)}
+                            isValid={isStep1Valid}
+                        />
+                    )}
+                    {step === 2 && (
+                        <PropertyStep
+                            surface={surface}
+                            propertyType={propertyType}
+                            rooms={rooms}
+                            surfaceValid={surfaceValid}
+                            propertyTypeValid={propertyTypeValid}
+                            roomsValid={roomsValid}
+                            touched={touched}
+                            setSurface={setSurface}
+                            setPropertyType={setPropertyType}
+                            setRooms={setRooms}
+                            setTouched={setTouched}
+                            onBack={() => setStep(1)}
+                            onNext={() => setStep(3)}
+                            isValid={isStep2Valid}
+                        />
+                    )}
+                    {step === 3 && (
+                        <ContactStep
+                            firstname={firstname}
+                            lastname={lastname}
+                            email={email}
+                            phone={phone}
+                            consent={consent}
+                            firstnameValid={firstnameValid}
+                            lastnameValid={lastnameValid}
+                            emailValid={emailValid}
+                            phoneValid={phoneValid}
+                            touched={touched}
+                            setFirstname={setFirstname}
+                            setLastname={setLastname}
+                            setEmail={setEmail}
+                            setPhone={setPhone}
+                            setConsent={setConsent}
+                            setTouched={setTouched}
+                            onBack={() => setStep(2)}
+                            onSubmit={handleSubmit}
+                            isValid={isStep3Valid}
+                        />
+                    )}
+                </AnimatePresence>
+            </CardContent>
+        </Card>
+    );
 }
