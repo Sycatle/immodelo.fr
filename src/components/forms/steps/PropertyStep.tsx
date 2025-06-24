@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,13 +19,27 @@ interface PropertyStepProps {
   surface: string;
   propertyType: string;
   rooms: string;
+  condition: string;
+  outdoorSpaces: string[];
+  parking: string;
+  yearBuilt: string;
+  occupation: string;
+  urgency: string;
   surfaceValid: boolean;
   propertyTypeValid: boolean;
   roomsValid: boolean;
+  conditionValid: boolean;
+  yearBuiltValid: boolean;
   touched: Touched;
   setSurface: (v: string) => void;
   setPropertyType: (v: string) => void;
   setRooms: (v: string) => void;
+  setCondition: (v: string) => void;
+  setOutdoorSpaces: (v: string[]) => void;
+  setParking: (v: string) => void;
+  setYearBuilt: (v: string) => void;
+  setOccupation: (v: string) => void;
+  setUrgency: (v: string) => void;
   setTouched: React.Dispatch<React.SetStateAction<Touched>>;
   onNext: () => void;
   onBack: () => void;
@@ -35,18 +50,39 @@ export function PropertyStep({
   surface,
   propertyType,
   rooms,
+  condition,
+  outdoorSpaces,
+  parking,
+  yearBuilt,
+  occupation,
+  urgency,
   surfaceValid,
   propertyTypeValid,
   roomsValid,
+  conditionValid,
+  yearBuiltValid,
   touched,
   setSurface,
   setPropertyType,
   setRooms,
+  setCondition,
+  setOutdoorSpaces,
+  setParking,
+  setYearBuilt,
+  setOccupation,
+  setUrgency,
   setTouched,
   onNext,
   onBack,
   isValid,
 }: PropertyStepProps) {
+  const [localTouched, setLocalTouched] = useState({
+    condition: false,
+    yearBuilt: false,
+  });
+
+  const localValid = conditionValid && yearBuiltValid;
+
   return (
     <motion.form
       key="step2"
@@ -58,6 +94,8 @@ export function PropertyStep({
       className="space-y-4"
       onSubmit={(e) => {
         e.preventDefault();
+        setLocalTouched({ condition: true, yearBuilt: true });
+        if (!localValid || !isValid) return;
         onNext();
       }}
     >
@@ -160,6 +198,147 @@ export function PropertyStep({
           </p>
         )}
       </div>
+      <div>
+        <Label className="p-1" htmlFor="condition">État général du bien</Label>
+        <Select
+          value={condition}
+          onValueChange={(v) => {
+            setCondition(v);
+            setLocalTouched((t) => ({ ...t, condition: true }));
+          }}
+        >
+          <SelectTrigger
+            id="condition"
+            aria-invalid={localTouched.condition && !conditionValid}
+            aria-describedby={
+              localTouched.condition && !conditionValid
+                ? "condition-error"
+                : undefined
+            }
+            className={cn(
+              localTouched.condition && !conditionValid && "border-red-500"
+            )}
+          >
+            <SelectValue placeholder="Sélectionnez l'état" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="Comme neuf">Comme neuf</SelectItem>
+            <SelectItem value="Bon état">Bon état</SelectItem>
+            <SelectItem value="Quelques travaux">Quelques travaux</SelectItem>
+            <SelectItem value="Travaux importants">Travaux importants</SelectItem>
+          </SelectContent>
+        </Select>
+        {localTouched.condition && !conditionValid && (
+          <p
+            id="condition-error"
+            role="alert"
+            className="text-sm text-red-500 mt-1"
+          >
+            Champ requis
+          </p>
+        )}
+      </div>
+      <div>
+        <Label className="p-1" htmlFor="outdoorSpaces">Espace extérieur</Label>
+        <div id="outdoorSpaces" className="flex flex-wrap gap-4 mt-1">
+          {[
+            "Jardin",
+            "Terrasse",
+            "Balcon",
+            "Aucun",
+          ].map((opt) => (
+            <label key={opt} className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                value={opt}
+                checked={outdoorSpaces.includes(opt)}
+                onChange={(e) => {
+                  const checked = e.target.checked;
+                  setOutdoorSpaces((prev) => {
+                    if (checked) return [...prev, opt];
+                    return prev.filter((v) => v !== opt);
+                  });
+                }}
+                className="mt-0.5"
+              />
+              {opt}
+            </label>
+          ))}
+        </div>
+      </div>
+      <div>
+        <Label className="p-1" htmlFor="parking">Stationnement</Label>
+        <Select value={parking} onValueChange={setParking}>
+          <SelectTrigger id="parking">
+            <SelectValue placeholder="Sélectionnez" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="Aucun">Aucun</SelectItem>
+            <SelectItem value="Parking collectif">Parking collectif</SelectItem>
+            <SelectItem value="Garage privé">Garage privé</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <div>
+        <Label className="p-1" htmlFor="yearBuilt">Année de construction</Label>
+        <Input
+          id="yearBuilt"
+          type="number"
+          value={yearBuilt}
+          onChange={(e) => setYearBuilt(e.target.value)}
+          onBlur={() =>
+            setLocalTouched((t) => ({ ...t, yearBuilt: true }))
+          }
+          placeholder="ex : 1998"
+          autoComplete="off"
+          aria-invalid={localTouched.yearBuilt && !yearBuiltValid}
+          aria-describedby={
+            localTouched.yearBuilt && !yearBuiltValid
+              ? "yearBuilt-error"
+              : undefined
+          }
+          className={cn(
+            localTouched.yearBuilt && !yearBuiltValid && "border-red-500"
+          )}
+        />
+        {localTouched.yearBuilt && !yearBuiltValid && (
+          <p
+            id="yearBuilt-error"
+            role="alert"
+            className="text-sm text-red-500 mt-1"
+          >
+            Format invalide
+          </p>
+        )}
+      </div>
+      <div>
+        <Label className="p-1" htmlFor="occupation">Occupation du bien</Label>
+        <Select value={occupation} onValueChange={setOccupation}>
+          <SelectTrigger id="occupation">
+            <SelectValue placeholder="Sélectionnez" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="Oui, j’y habite">Oui, j’y habite</SelectItem>
+            <SelectItem value="Loué">Loué</SelectItem>
+            <SelectItem value="Vide">Vide</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <div>
+        <Label className="p-1" htmlFor="urgency">Urgence de vente</Label>
+        <Select value={urgency} onValueChange={setUrgency}>
+          <SelectTrigger id="urgency">
+            <SelectValue placeholder="Sélectionnez" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="Oui, dans les 3 mois">
+              Oui, dans les 3 mois
+            </SelectItem>
+            <SelectItem value="Je me renseigne">Je me renseigne</SelectItem>
+            <SelectItem value="Pas encore décidé">Pas encore décidé</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
       <div className="flex justify-between gap-4">
         <Button
           type="button"
@@ -171,7 +350,7 @@ export function PropertyStep({
         </Button>
         <Button
           type="submit"
-          disabled={!isValid}
+          disabled={!isValid || !localValid}
           className="w-1/2 bg-orange-500 hover:bg-orange-600 text-white"
         >
           Étape suivante
