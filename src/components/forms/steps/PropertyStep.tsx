@@ -199,7 +199,9 @@ export function PropertyStep({
         )}
       </div>
       <div>
-        <Label className="p-1" htmlFor="condition">État général du bien</Label>
+        <Label className="p-1" htmlFor="condition">
+          État général du bien
+        </Label>
         <Select
           value={condition}
           onValueChange={(v) => {
@@ -225,7 +227,9 @@ export function PropertyStep({
             <SelectItem value="Comme neuf">Comme neuf</SelectItem>
             <SelectItem value="Bon état">Bon état</SelectItem>
             <SelectItem value="Quelques travaux">Quelques travaux</SelectItem>
-            <SelectItem value="Travaux importants">Travaux importants</SelectItem>
+            <SelectItem value="Travaux importants">
+              Travaux importants
+            </SelectItem>
           </SelectContent>
         </Select>
         {localTouched.condition && !conditionValid && (
@@ -239,14 +243,11 @@ export function PropertyStep({
         )}
       </div>
       <div>
-        <Label className="p-1" htmlFor="outdoorSpaces">Espace extérieur</Label>
+        <Label className="p-1" htmlFor="outdoorSpaces">
+          Espace extérieur
+        </Label>
         <div id="outdoorSpaces" className="flex flex-wrap gap-4 mt-1">
-          {[
-            "Jardin",
-            "Terrasse",
-            "Balcon",
-            "Aucun",
-          ].map((opt) => (
+          {["Jardin", "Terrasse", "Balcon", "Aucun"].map((opt) => (
             <label key={opt} className="flex items-center gap-2 text-sm">
               <input
                 type="checkbox"
@@ -255,7 +256,15 @@ export function PropertyStep({
                 onChange={(e) => {
                   const checked = e.target.checked;
                   setOutdoorSpaces((prev) => {
-                    if (checked) return [...prev, opt];
+                    if (opt === "Aucun" && checked) {
+                      return ["Aucun"];
+                    }
+                    if (opt === "Aucun" && !checked) {
+                      return [];
+                    }
+                    if (checked) {
+                      return prev.filter((v) => v !== "Aucun").concat(opt);
+                    }
                     return prev.filter((v) => v !== opt);
                   });
                 }}
@@ -267,7 +276,9 @@ export function PropertyStep({
         </div>
       </div>
       <div>
-        <Label className="p-1" htmlFor="parking">Stationnement</Label>
+        <Label className="p-1" htmlFor="parking">
+          Stationnement
+        </Label>
         <Select value={parking} onValueChange={setParking}>
           <SelectTrigger id="parking">
             <SelectValue placeholder="Sélectionnez" />
@@ -280,15 +291,15 @@ export function PropertyStep({
         </Select>
       </div>
       <div>
-        <Label className="p-1" htmlFor="yearBuilt">Année de construction</Label>
+        <Label className="p-1" htmlFor="yearBuilt">
+          Année de construction
+        </Label>
         <Input
           id="yearBuilt"
           type="number"
           value={yearBuilt}
           onChange={(e) => setYearBuilt(e.target.value)}
-          onBlur={() =>
-            setLocalTouched((t) => ({ ...t, yearBuilt: true }))
-          }
+          onBlur={() => setLocalTouched((t) => ({ ...t, yearBuilt: true }))}
           placeholder="ex : 1998"
           autoComplete="off"
           aria-invalid={localTouched.yearBuilt && !yearBuiltValid}
@@ -312,7 +323,9 @@ export function PropertyStep({
         )}
       </div>
       <div>
-        <Label className="p-1" htmlFor="occupation">Occupation du bien</Label>
+        <Label className="p-1" htmlFor="occupation">
+          Occupation du bien
+        </Label>
         <Select value={occupation} onValueChange={setOccupation}>
           <SelectTrigger id="occupation">
             <SelectValue placeholder="Sélectionnez" />
@@ -325,7 +338,9 @@ export function PropertyStep({
         </Select>
       </div>
       <div>
-        <Label className="p-1" htmlFor="urgency">Urgence de vente</Label>
+        <Label className="p-1" htmlFor="urgency">
+          Urgence de vente
+        </Label>
         <Select value={urgency} onValueChange={setUrgency}>
           <SelectTrigger id="urgency">
             <SelectValue placeholder="Sélectionnez" />
