@@ -25,7 +25,7 @@ export function useAddressSuggestions(address: string): UseAddressSuggestionsRes
       }
       try {
         const res = await fetch(
-          `https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(address)}&autocomplete=1&limit=5`
+          `https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(address)}&autocomplete=1&limit=3&type=housenumber`
         );
         if (!res.ok) {
           setFeatures([]);
