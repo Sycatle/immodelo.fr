@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -44,6 +45,8 @@ export function AddressStep({
   onNext,
   isValid,
 }: AddressStepProps) {
+  const [focused, setFocused] = useState(false);
+
   return (
     <motion.form
       key="step1"
@@ -66,9 +69,11 @@ export function AddressStep({
           id="address"
           value={address}
           onChange={(e) => setAddress(e.target.value)}
+          onFocus={() => setFocused(true)}
           onBlur={() => {
             onAddressBlur();
             setTouched({ ...touched, address: true });
+            setTimeout(() => setFocused(false), 100);
           }}
           placeholder="12 rue de la paix"
           autoComplete="street-address"
@@ -88,7 +93,7 @@ export function AddressStep({
             Adresse invalide
           </p>
         )}
-        {suggestions.length > 0 && (
+        {focused && suggestions.length > 0 && (
           <ul className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-md shadow max-h-48 overflow-auto">
             {suggestions.map((s, idx) => (
               <li
