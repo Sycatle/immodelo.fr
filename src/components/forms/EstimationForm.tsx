@@ -25,6 +25,7 @@ import {
   splitAddress,
 } from "@/lib/form-helpers";
 import { useAddressSuggestions } from "@/lib/useAddressSuggestions";
+import { FinishStep } from "./steps/FinishStep";
 
 export function EstimationForm() {
   const [step, setStep] = useState(1);
@@ -33,7 +34,8 @@ export function EstimationForm() {
   const [address, setAddress] = useState("");
   const [postcode, setPostcode] = useState("");
   const [city, setCity] = useState("");
-  const { suggestions, selectSuggestion, clear } = useAddressSuggestions(address);
+  const { suggestions, selectSuggestion, clear } =
+    useAddressSuggestions(address);
 
   const handleAddressBlur = () => {
     const parsed = splitAddress(address);
@@ -151,7 +153,7 @@ export function EstimationForm() {
       loading: "Estimation en cours...",
       success: (result) => {
         if (!result) throw new Error("Aucune estimation trouvée.");
-        setStep(1);
+        setStep(4);
         return `Prix estimé : ${result.estimatedPrice.toLocaleString("fr-FR", {
           style: "currency",
           currency: "EUR",
@@ -170,30 +172,32 @@ export function EstimationForm() {
         </CardTitle>
       </CardHeader>
       <CardContent className="relative duration-300">
-        <p className="text-gray-700 mb-4">
-          Remplissez ce formulaire pour recevoir une estimation gratuite de
-          votre bien immobilier.
-        </p>
         <AnimatePresence mode="wait">
           {step === 1 && (
-            <AddressStep
-              address={address}
-              postcode={postcode}
-              city={city}
-              suggestions={suggestions}
-              addressValid={addressValid}
-              postcodeValid={postcodeValid}
-              cityValid={cityValid}
-              touched={touched}
-              setAddress={setAddress}
-              setPostcode={setPostcode}
-              setCity={setCity}
-              onAddressBlur={handleAddressBlur}
-              setTouched={setTouched}
-              onSuggestionClick={handleSuggestionClick}
-              onNext={() => setStep(2)}
-              isValid={isStep1Valid}
-            />
+            <>
+              <p className="text-gray-700 mb-4">
+                Remplissez ce formulaire pour recevoir une estimation gratuite
+                de votre bien immobilier.
+              </p>
+              <AddressStep
+                address={address}
+                postcode={postcode}
+                city={city}
+                suggestions={suggestions}
+                addressValid={addressValid}
+                postcodeValid={postcodeValid}
+                cityValid={cityValid}
+                touched={touched}
+                setAddress={setAddress}
+                setPostcode={setPostcode}
+                setCity={setCity}
+                onAddressBlur={handleAddressBlur}
+                setTouched={setTouched}
+                onSuggestionClick={handleSuggestionClick}
+                onNext={() => setStep(2)}
+                isValid={isStep1Valid}
+              />
+            </>
           )}
           {step === 2 && (
             <PropertyStep
@@ -249,6 +253,47 @@ export function EstimationForm() {
               onSubmit={handleSubmit}
               isValid={isStep3Valid}
             />
+          )}
+
+          {/* Step 4 : Finished */}
+          {step === 4 && (
+            <>
+              <FinishStep
+                onFinish={() => {
+                  setStep(1);
+                  setAddress("");
+                  setPostcode("");
+                  setCity("");
+                  setSurface("");
+                  setPropertyType("");
+                  setRooms("");
+                  setCondition("");
+                  setOutdoorSpaces([]);
+                  setParking("");
+                  setYearBuilt("");
+                  setOccupation("");
+                  setUrgency("");
+                  setFirstname("");
+                  setLastname("");
+                  setEmail("");
+                  setPhone("");
+                  setConsent(false);
+                  setTouched({
+                    address: false,
+                    postcode: false,
+                    city: false,
+                    surface: false,
+                    propertyType: false,
+                    rooms: false,
+                    firstname: false,
+                    lastname: false,
+                    email: false,
+                    phone: false,
+                    consent: false,
+                  });
+                }}
+              />
+            </>
           )}
         </AnimatePresence>
       </CardContent>

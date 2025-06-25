@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef, useEffect } from "react";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -45,7 +46,24 @@ export function AddressStep({
   onNext,
   isValid,
 }: AddressStepProps) {
-  const [focused, setFocused] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const [isAddressFocused, setIsAddressFocused] = useState(false);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(event.target as Node)
+      ) {
+        setIsAddressFocused(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <motion.form
@@ -61,22 +79,25 @@ export function AddressStep({
         onNext();
       }}
     >
-      <div>
+      <div className="relative" ref={wrapperRef}>
         <Label className="p-1" htmlFor="address">
           Adresse
         </Label>
         <Input
           id="address"
+          name="addr_no_autofill"
           value={address}
           onChange={(e) => setAddress(e.target.value)}
-          onFocus={() => setFocused(true)}
           onBlur={() => {
+            // laisse un petit délai pour capturer un éventuel clic
             onAddressBlur();
             setTouched({ ...touched, address: true });
-            setTimeout(() => setFocused(false), 100);
           }}
           placeholder="12 rue de la paix"
-          autoComplete="street-address"
+          autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="none"
+          spellCheck="false"
           aria-invalid={touched.address && !addressValid}
           aria-describedby={
             touched.address && !addressValid ? "address-error" : undefined
@@ -93,7 +114,7 @@ export function AddressStep({
             Adresse invalide
           </p>
         )}
-        {focused && suggestions.length > 0 && (
+        {suggestions.length > 0 && (
           <ul className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-md shadow max-h-48 overflow-auto">
             {suggestions.map((s, idx) => (
               <li
