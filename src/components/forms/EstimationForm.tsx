@@ -1,15 +1,30 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AnimatePresence } from "framer-motion";
 import { ProgressBar } from "./ProgressBar";
 import { AddressStep } from "./steps/AddressStep";
 import { PropertyStep } from "./steps/PropertyStep";
 import { ContactStep } from "./steps/ContactStep";
-import type { Touched, AddressFeature } from "./types";
+import type { Touched } from "./types";
 import type { EstimateInput, EstimateResult } from "@/lib/estimate";
 import { toast } from "sonner";
+import {
+  isValidAddress,
+  isValidPostcode,
+  isValidCity,
+  isValidSurface,
+  isValidPropertyType,
+  isValidRooms,
+  isValidCondition,
+  isValidYearBuilt,
+  isValidName,
+  isValidEmail,
+  isValidPhone,
+  splitAddress,
+} from "@/lib/form-helpers";
+import { useAddressSuggestions } from "@/lib/useAddressSuggestions";
 
 export function EstimationForm() {
   const [step, setStep] = useState(1);
@@ -18,20 +33,7 @@ export function EstimationForm() {
   const [address, setAddress] = useState("");
   const [postcode, setPostcode] = useState("");
   const [city, setCity] = useState("");
-  const [suggestions, setSuggestions] = useState<string[]>([]);
-  const [features, setFeatures] = useState<AddressFeature[]>([]);
-
-  const splitAddress = (
-    value: string
-  ): { street: string; postcode: string; city: string } => {
-    const regex = /^(.*?)(\d{5})\s+(.+)$/;
-    const match = value.trim().match(regex);
-    if (match) {
-      const [, street, pc, ct] = match;
-      return { street: street.trim(), postcode: pc, city: ct.trim() };
-    }
-    return { street: value.trim(), postcode: "", city: "" };
-  };
+  const { suggestions, selectSuggestion, clear } = useAddressSuggestions(address);
 
   const handleAddressBlur = () => {
     const parsed = splitAddress(address);
@@ -72,25 +74,7 @@ export function EstimationForm() {
     consent: false,
   });
 
-  // Regex validation functions
-  const isValidAddress = (address: string) =>
-    /^[a-zA-Z0-9À-ÿ\s,.'-]+$/.test(address.trim()) && address.trim().length > 3;
-  const isValidPostcode = (postcode: string) => /^\d{5}$/.test(postcode);
-  const isValidCity = (city: string) =>
-    /^[a-zA-ZÀ-ÿ\s-]+$/.test(city.trim()) && city.trim().length > 2;
-  const isValidSurface = (surface: string) =>
-    /^\d+$/.test(surface) && Number(surface) > 5;
-  const isValidPropertyType = (type: string) =>
-    ["maison", "appartement", "terrain", "autre"].includes(type);
-  const isValidRooms = (rooms: string) =>
-    /^\d+$/.test(rooms) && Number(rooms) >= 0;
-  const isValidCondition = (c: string) => c.trim().length > 0;
-  const isValidYearBuilt = (y: string) => y === "" || /^\d{4}$/.test(y.trim());
-  const isValidName = (name: string) => /^[a-zA-ZÀ-ÿ\s-]+$/.test(name.trim());
-  const isValidEmail = (email: string) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  const isValidPhone = (phone: string) =>
-    /^((\+33|0)[1-9])(\d{2}){4}$/.test(phone.trim()); // Numéro FR
+  // Validations using helper utilities
 
   const addressValid = isValidAddress(address);
   const postcodeValid = isValidPostcode(postcode);
@@ -116,44 +100,13 @@ export function EstimationForm() {
   const isStep3Valid =
     firstnameValid && lastnameValid && emailValid && phoneValid && consent;
 
-  useEffect(() => {
-    const fetchSuggestions = async () => {
-      if (address.length < 3) return;
-      try {
-        const res = await fetch(
-          `https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(
-            address
-          )}&autocomplete=1&limit=5` // Limite à 5 suggestions
-        );
-        if (!res.ok) {
-          setFeatures([]);
-          setSuggestions([]);
-          return;
-        }
-        const data = await res.json();
-        const feats = Array.isArray(data.features)
-          ? (data.features as AddressFeature[])
-          : [];
-        setFeatures(feats);
-        setSuggestions(feats.map((f) => f.properties.label));
-      } catch {
-        setFeatures([]);
-        setSuggestions([]);
-      }
-    };
-
-    const timeout = setTimeout(fetchSuggestions, 300);
-    return () => clearTimeout(timeout);
-  }, [address]);
-
   const handleSuggestionClick = (index: number) => {
-    const selected = features[index];
-    const props = selected.properties;
-    const parsed = splitAddress(props.label);
+    const parsed = selectSuggestion(index);
+    if (!parsed) return;
     setAddress(parsed.street);
-    setPostcode(props.postcode || parsed.postcode);
-    setCity(props.city || parsed.city);
-    setSuggestions([]);
+    setPostcode(parsed.postcode);
+    setCity(parsed.city);
+    clear();
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
