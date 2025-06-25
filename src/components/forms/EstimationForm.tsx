@@ -8,7 +8,7 @@ import { AddressStep } from "./steps/AddressStep";
 import { PropertyStep } from "./steps/PropertyStep";
 import { ContactStep } from "./steps/ContactStep";
 import type { Touched, AddressFeature } from "./types";
-import estimatePrice, { EstimateInput } from "@/lib/estimate";
+import type { EstimateInput, EstimateResult } from "@/lib/estimate";
 
 export function EstimationForm() {
   const [step, setStep] = useState(1);
@@ -155,7 +155,7 @@ export function EstimationForm() {
     setSuggestions([]);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!consent) {
@@ -182,12 +182,24 @@ export function EstimationForm() {
       phone,
     };
 
-    const result = estimatePrice(data);
+    try {
+      const res = await fetch("/api/estimate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
 
-    if (result) {
-      console.log("Estimation réussie :", result);
-    } else {
-      alert("Aucune estimation trouvée pour ces critères.");
+      if (!res.ok) throw new Error("Request failed");
+
+      const result: EstimateResult | null = await res.json();
+
+      if (result) {
+        console.log("Estimation réussie :", result);
+      } else {
+        alert("Aucune estimation trouvée pour ces critères.");
+      }
+    } catch {
+      alert("Erreur lors du calcul de l'estimation.");
     }
 
     setStep(1);
