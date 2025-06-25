@@ -204,7 +204,7 @@ export function EstimationForm() {
           currency: "EUR",
         })}`;
       },
-      error: (err: any) => err.message || "Erreur lors de l'estimation",
+      error: (err: Error) => err.message || "Erreur lors de l'estimation",
     });
   };
 
