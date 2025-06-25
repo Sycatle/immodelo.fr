@@ -18,7 +18,7 @@ export default function FinishStep({ onFinish }: FinishStepProps) {
       transition={{ duration: 0.3 }}
       className="space-y-4"
     >
-      <h2 className="text-2xl font-bold">Merci pour votre demande !</h2>
+      <h2 className="text-2xl font-bold">Merci pour votre demande 🎉</h2>
       <p className="text-gray-700">
         Votre estimation a bien été enregistrée. Nous vous contacterons
         prochainement pour discuter des prochaines étapes.

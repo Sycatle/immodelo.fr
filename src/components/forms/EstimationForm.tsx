@@ -25,7 +25,7 @@ import {
   splitAddress,
 } from "@/lib/form-helpers";
 import { useAddressSuggestions } from "@/lib/useAddressSuggestions";
-import { FinishStep } from "./steps/FinishStep";
+import FinishStep from "./steps/FinishStep";
 
 export function EstimationForm() {
   const [step, setStep] = useState(1);
