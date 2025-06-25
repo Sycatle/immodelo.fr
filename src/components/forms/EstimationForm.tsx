@@ -9,6 +9,7 @@ import { PropertyStep } from "./steps/PropertyStep";
 import { ContactStep } from "./steps/ContactStep";
 import type { Touched, AddressFeature } from "./types";
 import type { EstimateInput, EstimateResult } from "@/lib/estimate";
+import { toast } from "sonner";
 
 export function EstimationForm() {
   const [step, setStep] = useState(1);
@@ -159,7 +160,7 @@ export function EstimationForm() {
     e.preventDefault();
 
     if (!consent) {
-      alert("Merci de cocher la case de consentement.");
+      toast.error("Merci de cocher la case de consentement.");
       return;
     }
 
@@ -182,27 +183,29 @@ export function EstimationForm() {
       phone,
     };
 
-    try {
+    const promise = async () => {
       const res = await fetch("/api/estimate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
 
-      if (!res.ok) throw new Error("Request failed");
+      if (!res.ok) throw new Error("Erreur serveur");
+      return res.json() as Promise<EstimateResult | null>;
+    };
 
-      const result: EstimateResult | null = await res.json();
-
-      if (result) {
-        console.log("Estimation réussie :", result);
-      } else {
-        alert("Aucune estimation trouvée pour ces critères.");
-      }
-    } catch {
-      alert("Erreur lors du calcul de l'estimation.");
-    }
-
-    setStep(1);
+    toast.promise(promise(), {
+      loading: "Estimation en cours...",
+      success: (result) => {
+        if (!result) throw new Error("Aucune estimation trouvée.");
+        setStep(1);
+        return `Prix estimé : ${result.estimatedPrice.toLocaleString("fr-FR", {
+          style: "currency",
+          currency: "EUR",
+        })}`;
+      },
+      error: (err: any) => err.message || "Erreur lors de l'estimation",
+    });
   };
 
   return (
