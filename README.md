@@ -24,6 +24,24 @@ Les estimations sont basées sur l'extraction 2024 de la base **Demandes de vale
 node data/extra-72.js
 ```
 
+## Stockage DVF avec PostgreSQL et Docker
+
+1. Démarrez PostgreSQL via Docker :
+
+```bash
+docker-compose up -d db
+```
+
+2. Installez les dépendances puis importez les données :
+
+```bash
+pnpm install
+node data/import-dvf-to-postgres.js
+```
+
+La base `dvfdb` contient alors la table `dvf_sales` avec toutes les ventes du département 72.
+
+
 ## Fonctionnement de l'application
 
 La page d'accueil contient un composant `Hero` qui affiche un formulaire d'estimation en trois étapes :
