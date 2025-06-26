@@ -37,14 +37,15 @@ export default function EstimationPage() {
           </a>
 
           <ProgressBar step={step} />
-          <span className="ml-4 text-sm font-medium text-gray-700">
+
+          <span className="ml-auto lg:ml-4 text-sm font-medium text-gray-700">
             {stepTitles[step - 1]}
           </span>
         </div>
       </header>
 
       <div className="grid lg:grid-cols-12 overflow-hidden h-screen">
-        <div className="flex flex-col gap-4 flex-1 items-center relative lg:col-span-7 mx-auto min-h-screen overflow-y-auto w-full bg-white">
+        <div className="flex flex-col gap-4 flex-1 items-center relative lg:col-span-7 mx-auto min-h-screen overflow-y-auto w-full bg-white shadow-lg">
           <EstimationForm
             step={step}
             setStep={setStep}
@@ -60,11 +61,11 @@ export default function EstimationPage() {
         </div>
       </div>
 
-      <footer className="flex items-center justify-center py-4 bg-white border-t">
+      {/* <footer className="flex items-center justify-center py-4 bg-white border-t">
         <p className="text-sm text-gray-600">
           © {new Date().getFullYear()} Immodelo. Tous droits réservés.
         </p>
-      </footer>
+      </footer> */}
     </>
   );
 }
