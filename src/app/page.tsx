@@ -13,33 +13,6 @@ const Map = dynamic(
 export default function EstimationPage() {
   const [addressLabel, setAddressLabel] = useState("Le Mans");
   const [coords, setCoords] = useState<[number, number]>([48.0061, 0.1996]);
-  useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://cdn.apple-mapkit.com/mk/5.x.x/mapkit.js";
-    script.async = true;
-    script.onload = () => {
-      // appelle l’API interne pour récupérer le JWT
-      fetch("/api/mapkit-token")
-        .then((res) => res.json())
-        .then(({ token }) => {
-          // initialise MapKit
-          // @ts-ignore
-          mapkit.init({
-            authorizationCallback: (done: (token: string) => void) =>
-              done(token),
-          });
-          // crée la carte centrée sur Le Mans
-          // @ts-ignore
-          new mapkit.Map("apple-map", {
-            center: new mapkit.Coordinate(48.0061, 0.1996),
-            span: new mapkit.CoordinateSpan(0.1, 0.1),
-            showsCompass: false,
-            showsScale: false,
-          });
-        });
-    };
-    document.head.appendChild(script);
-  }, []);
 
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
@@ -54,20 +27,20 @@ export default function EstimationPage() {
         </div>
         <div className="flex flex-1 items-center justify-center px-4 lg:px-6 py-16">
           <div className="w-full">
-            <EstimationForm
-              onAddressSelect={(label, c) => {
-                setAddressLabel(label);
-                setCoords(c);
-              }}
-            />
+            <EstimationForm />
           </div>
         </div>
       </div>
 
-      {/* === ici on remplace l’image par la carte === */}
-      <div className="relative hidden lg:block bg-gray-300">
+      <div className="relative z-40 hidden lg:block bg-gray-300">
         <Map position={coords} label={addressLabel} />
       </div>
+
+      <footer className="flex items-center justify-center py-4 bg-white border-t">
+        <p className="text-sm text-gray-600">
+          © {new Date().getFullYear()} Immodelo. Tous droits réservés.
+        </p>
+      </footer>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 // components/Map.client.tsx
 "use client";
 
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, useMap } from "react-leaflet";
 import { useEffect } from "react";
 import "leaflet/dist/leaflet.css";
 
@@ -19,7 +19,6 @@ function ChangeView({ center }: { center: [number, number] }) {
 }
 
 export function Map({ position, label }: MapProps) {
-
   return (
     <MapContainer
       center={position}
@@ -31,9 +30,6 @@ export function Map({ position, label }: MapProps) {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       />
-      <Marker position={position}>
-        <Popup>{label}</Popup>
-      </Marker>
     </MapContainer>
   );
 }
