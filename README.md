@@ -57,7 +57,7 @@ Une barre de progression indique l'étape en cours et chaque champ de formulaire
 Le module `src/lib/estimate.ts` (utilisé à la fois côté serveur et dans l'API) contient la logique suivante :
 
 1. Conversion et nettoyage des données saisies (surface cible, type de bien et code postal).
-2. Lecture du fichier `data/dvf_72.json` contenant l'historique des transactions de l'année 2024.
+2. Lecture de la table `dvf_sales` dans PostgreSQL contenant l'historique des transactions de l'année 2024.
 3. Filtrage de toutes les ventes répondant aux critères :
    - `nature_mutation` vaut "Vente" ;
    - le `code_postal` est identique au code saisi ;
@@ -72,7 +72,7 @@ Le module `src/lib/estimate.ts` (utilisé à la fois côté serveur et dans l'AP
 Si aucune vente ne correspond, l'API renvoie `null`.
 
 ```ts
-export default function estimatePrice(data: EstimateInput): EstimateResult | null {
+export default async function estimatePrice(data: EstimateInput): Promise<EstimateResult | null> {
   const targetSurface = parseFloat(String(data.surface));
   const propertyType = data.propertyType.trim().toLowerCase();
   const postcode = data.postcode.trim();

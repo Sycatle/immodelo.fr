@@ -1,16 +1,19 @@
 // src/lib/estimate.ts
-import dumps from "../../data/dvf_72.json" assert { type: "json" };
+import { Pool } from "pg";
+
+// Connection pool for PostgreSQL. Connection details are read from the
+// standard PG* environment variables which are already configured for the
+// Docker setup (see docker-compose.yml).
+const pool = new Pool();
 
 type DVFEntry = {
   code_postal: string;
   commune: string;
   type_local: string;
-  valeur_fonciere: string;
-  surface_reelle_bati: string;
+  valeur_fonciere: string | number;
+  surface_reelle_bati: string | number;
   nature_mutation?: string;
 };
-
-const typedDumps = dumps as DVFEntry[];
 
 export interface EstimateInput {
   address: string;
@@ -90,9 +93,9 @@ function normalizeCommune(name: string): string {
     .trim();
 }
 
-export default function estimatePrice(
+export default async function estimatePrice(
   data: EstimateInput
-): EstimateResult | null {
+): Promise<EstimateResult | null> {
   const targetSurface = parseFloat(String(data.surface));
   if (isNaN(targetSurface) || targetSurface < 15) return null;
 
@@ -101,21 +104,25 @@ export default function estimatePrice(
   const postcode = data.postcode.trim();
 
   // Étape 1 — ventes dans la même commune, même type
-  const relevantSales = typedDumps
-    .map((item) => {
-      const surface = parseFloat(item.surface_reelle_bati?.replace(",", "."));
-      const price = parseFloat(item.valeur_fonciere?.replace(",", "."));
+  const { rows } = await pool.query(
+    `SELECT surface_reelle_bati, valeur_fonciere, commune
+       FROM dvf_sales
+      WHERE nature_mutation = 'Vente'
+        AND code_postal = $1
+        AND lower(type_local) = $2
+        AND surface_reelle_bati IS NOT NULL
+        AND valeur_fonciere IS NOT NULL
+        AND surface_reelle_bati::numeric > 10
+        AND valeur_fonciere::numeric > 10000`,
+    [postcode, propertyType]
+  );
+
+  const relevantSales = rows
+    .map((item: DVFEntry) => {
+      const surface = parseFloat(String(item.surface_reelle_bati));
+      const price = parseFloat(String(item.valeur_fonciere));
       const cityItem = normalizeCommune(item.commune ?? "");
-      if (
-        item.nature_mutation?.toLowerCase() === "vente" &&
-        cityItem === normalizedTargetCity &&
-        item.code_postal === postcode &&
-        item.type_local?.toLowerCase() === propertyType &&
-        !isNaN(surface) &&
-        !isNaN(price) &&
-        surface > 10 &&
-        price > 10000
-      ) {
+      if (cityItem === normalizedTargetCity && !isNaN(surface) && !isNaN(price)) {
         return { surface, price, pricePerM2: price / surface };
       }
       return null;
