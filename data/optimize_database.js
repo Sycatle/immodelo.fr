@@ -1,13 +1,11 @@
 // optimize_database.js
 // Ce script crée des index clés, vérifie la qualité des données, et affiche des recommandations.
 
-const { Pool } = require('pg');
+const pool = require('./db');
 
 async function optimize() {
   // ⚠️ Adaptez la connectionString si nécessaire (port, host, credentials).
-  const pool = new Pool({
-    connectionString: 'postgres://dvf:dvfpass@localhost:5433/dvfdb'
-  });
+
 
   const client = await pool.connect();
   try {

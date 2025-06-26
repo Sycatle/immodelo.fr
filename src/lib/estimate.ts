@@ -1,16 +1,8 @@
 // src/lib/estimate.ts
-import { Pool } from "pg";
+import { pool } from "./db";
 
-// Connection pool for PostgreSQL. Connection details are read from the
-// standard PG* environment variables which are already configured for the
-// Docker setup (see docker-compose.yml).
-const pool = new Pool({
-  host:     "localhost",
-  port:     5433,
-  user:     "dvf",
-  password: "dvfpass",
-  database: "dvfdb",
-});
+// `pool` contains the PostgreSQL connection. Connection parameters are
+// defined in src/lib/db.ts and mirror the docker-compose setup.
 
 type DVFEntry = {
   code_postal: string;

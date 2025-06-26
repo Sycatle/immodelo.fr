@@ -1,10 +1,7 @@
 // fetch_sales_72220.js
-const { Pool } = require('pg');
+const pool = require('./db');
 
 async function fetchByPostcode(cp) {
-  const pool = new Pool({
-    connectionString: 'postgres://dvf:dvfpass@localhost:5433/dvfdb'
-  });
 
   try {
     const { rows } = await pool.query(
