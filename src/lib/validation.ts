@@ -43,7 +43,6 @@ export const estimateInputSchema = z.object({
   exceptionalView: z.boolean().optional(),
   pool: z.boolean().optional(),
   sewer: z.boolean().optional(),
-  outdoorSpaces: z.array(z.string()).default([]),
   dpe: z.string().optional().default(""),
   yearBuilt: z
     .preprocess((v) => (v === "" || v === null ? undefined : Number(v)),

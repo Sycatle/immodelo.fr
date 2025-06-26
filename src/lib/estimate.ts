@@ -32,16 +32,15 @@ export interface EstimateInput {
   exceptionalView?: boolean;
   pool?: boolean;
   sewer?: boolean;
-  outdoorSpaces: string[]; // à la place de boolean
   dpe?: string;
-  yearBuilt: number;
+  yearBuilt?: number;
   houseQuality?: string;
   brightness?: string;
   noise?: string;
   transportProximity?: string;
   roofQuality?: string;
-  occupation: string;
-  urgency: string;
+  occupation?: string;
+  urgency?: string;
   firstname: string;
   lastname: string;
   email: string;

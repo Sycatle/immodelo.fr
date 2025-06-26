@@ -9,7 +9,9 @@ import StepLayout from "./StepLayout";
 import { AnimatePresence } from "framer-motion";
 import { AddressStep } from "./steps/AddressStep";
 import { PropertyTypeStep } from "./steps/PropertyTypeStep";
-import { PropertyStep } from "./steps/PropertyStep";
+import { PropertyMainStep } from "./steps/PropertyMainStep";
+import { PropertyFeaturesStep } from "./steps/PropertyFeaturesStep";
+import { PropertyDetailsStep } from "./steps/PropertyDetailsStep";
 import { ContactStep } from "./steps/ContactStep";
 import type { Touched } from "./types";
 import type { EstimateInput, EstimateResult } from "@/lib/estimate";
@@ -21,7 +23,6 @@ import {
   isValidSurface,
   isValidPropertyType,
   isValidRooms,
-  isValidCondition,
   isValidYearBuilt,
   isValidPositiveInt,
   isValidName,
@@ -36,8 +37,10 @@ import FinishStep from "./steps/FinishStep";
 const stepTitles = [
   "Étape 1 : Adresse du bien",
   "Étape 2 : À propos de ce bien",
-  "Étape 3 : Caractéristiques du bien",
-  "Étape 4 : Mes coordonnées",
+  "Étape 3 : Informations principales du bien",
+  "Étape 4 : Caractéristiques du bien",
+  "Étape 5 : Précisions concernant votre bien",
+  "Étape 6 : Mes coordonnées",
 ];
 
 interface EstimationFormProps {
@@ -86,7 +89,6 @@ export function EstimationForm({
   const [buildableSurface, setBuildableSurface] = useState("");
   const [bathrooms, setBathrooms] = useState("");
   const [levels, setLevels] = useState("");
-  const [outdoorSpaces, setOutdoorSpaces] = useState<string[]>([]);
   const [partyWalls, setPartyWalls] = useState(false);
   const [basement, setBasement] = useState(false);
   const [hasParking, setHasParking] = useState(false);
@@ -103,8 +105,6 @@ export function EstimationForm({
   const [noise, setNoise] = useState("");
   const [transportProximity, setTransportProximity] = useState("");
   const [roofQuality, setRoofQuality] = useState("");
-  const [occupation, setOccupation] = useState("");
-  const [urgency, setUrgency] = useState("");
 
   // --- Step 3 : contact details ---
   const [firstname, setFirstname] = useState("");
@@ -137,7 +137,6 @@ export function EstimationForm({
     setPropertyType("");
     setRooms("");
     setCondition("");
-    setOutdoorSpaces([]);
     setTotalSurface("");
     setBuildableSurface("");
     setBathrooms("");
@@ -158,8 +157,6 @@ export function EstimationForm({
     setNoise("");
     setTransportProximity("");
     setRoofQuality("");
-    setOccupation("");
-    setUrgency("");
     setFirstname("");
     setLastname("");
     setEmail("");
@@ -188,7 +185,6 @@ export function EstimationForm({
   const surfaceValid = isValidSurface(surface);
   const propertyTypeValid = isValidPropertyType(propertyType);
   const roomsValid = isValidRooms(rooms);
-  const conditionValid = isValidCondition(condition);
   const yearBuiltValid = isValidYearBuilt(yearBuilt);
   const totalSurfaceValid = isValidPositiveInt(totalSurface);
   const buildableSurfaceValid = isValidPositiveInt(buildableSurface);
@@ -196,14 +192,11 @@ export function EstimationForm({
   const levelsValid = isValidPositiveInt(levels);
   const parkingSpotsValid = !hasParking || isValidPositiveInt(parkingSpots);
   const outbuildingsValid = !hasOutbuildings || isValidPositiveInt(outbuildings);
-  const dpeValid = dpe.trim().length > 0;
   const houseQualityValid = houseQuality.trim().length > 0;
   const brightnessValid = brightness.trim().length > 0;
   const noiseValid = noise.trim().length > 0;
   const transportProximityValid = transportProximity.trim().length > 0;
   const roofQualityValid = roofQuality.trim().length > 0;
-  const occupationValid = occupation.trim().length > 0;
-  const urgencyValid = urgency.trim().length > 0;
   const firstnameValid = isValidName(firstname);
   const lastnameValid = isValidName(lastname);
   const emailValid = isValidEmail(email);
@@ -218,20 +211,16 @@ export function EstimationForm({
     buildableSurfaceValid &&
     roomsValid &&
     bathroomsValid &&
-    levelsValid &&
-    conditionValid &&
-    parkingSpotsValid &&
-    outbuildingsValid &&
-    dpeValid &&
-    yearBuiltValid &&
+    levelsValid;
+  const isStep4Valid = parkingSpotsValid && outbuildingsValid;
+  const isStep5Valid =
+    (!yearBuilt || yearBuiltValid) &&
+    roofQualityValid &&
     houseQualityValid &&
     brightnessValid &&
     noiseValid &&
-    transportProximityValid &&
-    roofQualityValid &&
-    occupationValid &&
-    urgencyValid;
-  const isStep4Valid =
+    transportProximityValid;
+  const isStep6Valid =
     firstnameValid && lastnameValid && emailValid && phoneValid && consent;
 
   const handleSuggestionClick = (index: number) => {
@@ -271,7 +260,6 @@ export function EstimationForm({
       bathrooms: bathrooms ? parseInt(bathrooms, 10) : undefined,
       levels: levels ? parseInt(levels, 10) : undefined,
       condition,
-      outdoorSpaces,
       partyWalls,
       basement,
       parkingSpots: hasParking ? parseInt(parkingSpots || "0", 10) : undefined,
@@ -282,14 +270,12 @@ export function EstimationForm({
       pool,
       sewer,
       dpe,
-      yearBuilt: parseInt(yearBuilt, 10),
+      yearBuilt: yearBuilt ? parseInt(yearBuilt, 10) : undefined,
       houseQuality,
       brightness,
       noise,
       transportProximity,
       roofQuality,
-      occupation,
-      urgency,
       firstname,
       lastname,
       email,
@@ -311,7 +297,7 @@ export function EstimationForm({
       loading: "Estimation en cours...",
       success: (result) => {
         if (!result) throw new Error("Aucune estimation trouvée.");
-        setStep(5);
+        setStep(7);
         return `Prix estimé : ${result.estimatedPrice.toLocaleString("fr-FR", {
           style: "currency",
           currency: "EUR",
@@ -379,38 +365,15 @@ export function EstimationForm({
           onBack={() => setStep(2)}
           nextDisabled={!isStep3Valid}
         >
-          <PropertyStep
+          <PropertyMainStep
             surface={surface}
-            rooms={rooms}
-            condition={condition}
             totalSurface={totalSurface}
             buildableSurface={buildableSurface}
-            outdoorSpaces={outdoorSpaces}
-            partyWalls={partyWalls}
-            basement={basement}
-            hasParking={hasParking}
-            parkingSpots={parkingSpots}
-            hasOutbuildings={hasOutbuildings}
-            outbuildings={outbuildings}
-            exceptionalView={exceptionalView}
+            rooms={rooms}
             bathrooms={bathrooms}
             levels={levels}
-            isValid={isStep3Valid}
-            pool={pool}
-            sewer={sewer}
-            dpe={dpe}
-            yearBuilt={yearBuilt}
-            houseQuality={houseQuality}
-            brightness={brightness}
-            noise={noise}
-            transportProximity={transportProximity}
-            roofQuality={roofQuality}
-            occupation={occupation}
-            urgency={urgency}
             surfaceValid={surfaceValid}
             roomsValid={roomsValid}
-            conditionValid={conditionValid}
-            yearBuiltValid={yearBuiltValid}
             touched={touched}
             setSurface={setSurface}
             setTotalSurface={setTotalSurface}
@@ -418,29 +381,10 @@ export function EstimationForm({
             setRooms={setRooms}
             setBathrooms={setBathrooms}
             setLevels={setLevels}
-            setCondition={setCondition}
-            setOutdoorSpaces={setOutdoorSpaces}
-            setPartyWalls={setPartyWalls}
-            setBasement={setBasement}
-            setHasParking={setHasParking}
-            setParkingSpots={setParkingSpots}
-            setHasOutbuildings={setHasOutbuildings}
-            setOutbuildings={setOutbuildings}
-            setExceptionalView={setExceptionalView}
-            setPool={setPool}
-            setSewer={setSewer}
-            setDpe={setDpe}
-            setYearBuilt={setYearBuilt}
-            setHouseQuality={setHouseQuality}
-            setBrightness={setBrightness}
-            setNoise={setNoise}
-            setTransportProximity={setTransportProximity}
-            setRoofQuality={setRoofQuality}
-            setOccupation={setOccupation}
-            setUrgency={setUrgency}
             setTouched={setTouched}
             onNext={() => setStep(4)}
             formId="step3"
+            isValid={isStep3Valid}
           />
         </StepLayout>
       )}
@@ -450,6 +394,68 @@ export function EstimationForm({
           formId="step4"
           onBack={() => setStep(3)}
           nextDisabled={!isStep4Valid}
+        >
+          <PropertyFeaturesStep
+            partyWalls={partyWalls}
+            basement={basement}
+            hasParking={hasParking}
+            parkingSpots={parkingSpots}
+            hasOutbuildings={hasOutbuildings}
+            outbuildings={outbuildings}
+            exceptionalView={exceptionalView}
+            pool={pool}
+            sewer={sewer}
+            setPartyWalls={setPartyWalls}
+            setBasement={setBasement}
+            setHasParking={setHasParking}
+            setParkingSpots={setParkingSpots}
+            setHasOutbuildings={setHasOutbuildings}
+            setOutbuildings={setOutbuildings}
+            setExceptionalView={setExceptionalView}
+            setPool={setPool}
+            setSewer={setSewer}
+            onNext={() => setStep(5)}
+            formId="step4"
+            isValid={isStep4Valid}
+          />
+        </StepLayout>
+      )}
+      {step === 5 && (
+        <StepLayout
+          title={stepTitles[4]}
+          formId="step5"
+          onBack={() => setStep(4)}
+          nextDisabled={!isStep5Valid}
+        >
+          <PropertyDetailsStep
+            condition={condition}
+            dpe={dpe}
+            yearBuilt={yearBuilt}
+            houseQuality={houseQuality}
+            brightness={brightness}
+            noise={noise}
+            transportProximity={transportProximity}
+            roofQuality={roofQuality}
+            setCondition={setCondition}
+            setDpe={setDpe}
+            setYearBuilt={setYearBuilt}
+            setHouseQuality={setHouseQuality}
+            setBrightness={setBrightness}
+            setNoise={setNoise}
+            setTransportProximity={setTransportProximity}
+            setRoofQuality={setRoofQuality}
+            onNext={() => setStep(6)}
+            formId="step5"
+            isValid={isStep5Valid}
+          />
+        </StepLayout>
+      )}
+      {step === 6 && (
+        <StepLayout
+          title={stepTitles[5]}
+          formId="step6"
+          onBack={() => setStep(5)}
+          nextDisabled={!isStep6Valid}
         >
           <ContactStep
             firstname={firstname}
@@ -469,13 +475,13 @@ export function EstimationForm({
             setConsent={setConsent}
             setTouched={setTouched}
             onSubmit={handleSubmit}
-            formId="step4"
+            formId="step6"
           />
         </StepLayout>
       )}
 
-      {/* Step 5 : Finished */}
-      {step === 5 && (
+      {/* Step 6 : Finished */}
+      {step === 7 && (
         <>
           <FinishStep
             onFinish={resetForm}
