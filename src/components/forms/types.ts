@@ -13,6 +13,9 @@ export interface Touched {
 }
 
 export interface AddressFeature {
+  geometry: {
+    coordinates: [number, number];
+  };
   properties: {
     label: string;
     postcode?: string;

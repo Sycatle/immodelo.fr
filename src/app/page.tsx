@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { EstimationForm } from "@/components/forms/EstimationForm";
 import { HouseIcon } from "lucide-react";
 import dynamic from "next/dynamic";
@@ -11,6 +11,8 @@ const Map = dynamic(
 );
 
 export default function EstimationPage() {
+  const [addressLabel, setAddressLabel] = useState("Le Mans");
+  const [coords, setCoords] = useState<[number, number]>([48.0061, 0.1996]);
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://cdn.apple-mapkit.com/mk/5.x.x/mapkit.js";
@@ -52,14 +54,19 @@ export default function EstimationPage() {
         </div>
         <div className="flex flex-1 items-center justify-center px-4 lg:px-6 py-16">
           <div className="w-full">
-            <EstimationForm />
+            <EstimationForm
+              onAddressSelect={(label, c) => {
+                setAddressLabel(label);
+                setCoords(c);
+              }}
+            />
           </div>
         </div>
       </div>
 
       {/* === ici on remplace l’image par la carte === */}
       <div className="relative hidden lg:block bg-gray-300">
-        <Map />
+        <Map position={coords} label={addressLabel} />
       </div>
     </div>
   );

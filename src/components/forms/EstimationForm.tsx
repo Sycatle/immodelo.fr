@@ -27,7 +27,10 @@ import {
 import { useAddressSuggestions } from "@/lib/useAddressSuggestions";
 import FinishStep from "./steps/FinishStep";
 
-export function EstimationForm() {
+interface EstimationFormProps {
+  onAddressSelect?: (label: string, coords: [number, number]) => void;
+}
+export function EstimationForm({ onAddressSelect }: EstimationFormProps) {
   const [step, setStep] = useState(1);
 
   // Step 1 states
@@ -109,6 +112,12 @@ export function EstimationForm() {
     setPostcode(parsed.postcode);
     setCity(parsed.city);
     clear();
+    if (parsed.lat && parsed.lon && onAddressSelect) {
+      onAddressSelect(
+        `${parsed.street}, ${parsed.postcode} ${parsed.city}`,
+        [parsed.lat, parsed.lon]
+      );
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

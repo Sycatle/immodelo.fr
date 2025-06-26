@@ -55,6 +55,8 @@ export function useAddressSuggestions(address: string): UseAddressSuggestionsRes
       street: parsed.street,
       postcode: props.postcode || parsed.postcode,
       city: props.city || parsed.city,
+      lat: selected.geometry.coordinates[1],
+      lon: selected.geometry.coordinates[0],
     };
   };
 

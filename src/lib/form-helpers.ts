@@ -2,6 +2,8 @@ export interface ParsedAddress {
   street: string;
   postcode: string;
   city: string;
+  lat?: number;
+  lon?: number;
 }
 
 /**
