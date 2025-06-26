@@ -27,6 +27,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid input" }, { status: 400 });
   }
 
-  const result = estimatePrice(data);
+  const result = await estimatePrice(data);
   return NextResponse.json(result);
 }
