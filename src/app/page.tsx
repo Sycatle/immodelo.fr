@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { EstimationForm } from "@/components/forms/EstimationForm";
 import { HouseIcon } from "lucide-react";
 import dynamic from "next/dynamic";
@@ -27,10 +27,15 @@ export default function EstimationPage() {
       <div className="grid min-h-screen lg:grid-cols-2">
         <div className="flex flex-col gap-4 relative lg:h-screen lg:overflow-y-auto bg-white">
           <div className="flex flex-1 items-center justify-center px-4 lg:px-6 py-16">
-            <div className="w-full">
-              <EstimationForm />
-            </div>
+          <div className="w-full">
+            <EstimationForm
+              onAddressSelect={(label, c) => {
+                setAddressLabel(label);
+                setCoords(c);
+              }}
+            />
           </div>
+        </div>
         </div>
 
         <div className="relative z-40 hidden lg:block bg-gray-300">
