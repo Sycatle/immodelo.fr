@@ -19,7 +19,6 @@ interface PropertyStepProps {
   surface: string;
   totalSurface: string;
   buildableSurface: string;
-  propertyType: string;
   rooms: string;
   bathrooms: string;
   levels: string;
@@ -44,7 +43,6 @@ interface PropertyStepProps {
   occupation: string;
   urgency: string;
   surfaceValid: boolean;
-  propertyTypeValid: boolean;
   roomsValid: boolean;
   conditionValid: boolean;
   yearBuiltValid: boolean;
@@ -52,7 +50,6 @@ interface PropertyStepProps {
   setSurface: (v: string) => void;
   setTotalSurface: (v: string) => void;
   setBuildableSurface: (v: string) => void;
-  setPropertyType: (v: string) => void;
   setRooms: (v: string) => void;
   setBathrooms: (v: string) => void;
   setLevels: (v: string) => void;
@@ -86,7 +83,6 @@ export function PropertyStep({
   surface,
   totalSurface,
   buildableSurface,
-  propertyType,
   rooms,
   bathrooms,
   levels,
@@ -111,7 +107,6 @@ export function PropertyStep({
   occupation,
   urgency,
   surfaceValid,
-  propertyTypeValid,
   roomsValid,
   conditionValid,
   yearBuiltValid,
@@ -119,7 +114,6 @@ export function PropertyStep({
   setSurface,
   setTotalSurface,
   setBuildableSurface,
-  setPropertyType,
   setRooms,
   setBathrooms,
   setLevels,
@@ -157,7 +151,7 @@ export function PropertyStep({
 
   return (
     <motion.form
-      key="step2"
+      key="step3"
       layout
       initial={{ x: 50, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
@@ -171,47 +165,6 @@ export function PropertyStep({
         onNext();
       }}
     >
-      <div>
-        <Label className="p-1" htmlFor="propertyType">
-          Type de bien
-        </Label>
-        <Select
-          value={propertyType}
-          onValueChange={(v) => {
-            setPropertyType(v);
-            setTouched({ ...touched, propertyType: true });
-          }}
-        >
-          <SelectTrigger
-            aria-invalid={touched.propertyType && !propertyTypeValid}
-            aria-describedby={
-              touched.propertyType && !propertyTypeValid
-                ? "propertyType-error"
-                : undefined
-            }
-            className={cn("w-full " + (
-              touched.propertyType && !propertyTypeValid && "border-red-500")
-            )}
-          >
-            <SelectValue placeholder="Sélectionnez un type" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="maison">Maison</SelectItem>
-            <SelectItem value="appartement">Appartement</SelectItem>
-            <SelectItem value="terrain">Terrain</SelectItem>
-            <SelectItem value="autre">Autre</SelectItem>
-          </SelectContent>
-        </Select>
-        {touched.propertyType && !propertyTypeValid && (
-          <p
-            id="propertyType-error"
-            role="alert"
-            className="text-sm text-red-500 mt-1"
-          >
-            Type de bien invalide
-          </p>
-        )}
-      </div>
       <div>
         <Label className="p-1" htmlFor="dpe">
           Diagnostic de Performance Energétique

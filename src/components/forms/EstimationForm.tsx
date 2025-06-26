@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AnimatePresence } from "framer-motion";
 import { AddressStep } from "./steps/AddressStep";
+import { PropertyTypeStep } from "./steps/PropertyTypeStep";
 import { PropertyStep } from "./steps/PropertyStep";
 import { ContactStep } from "./steps/ContactStep";
 import type { Touched } from "./types";
@@ -140,13 +141,10 @@ export function EstimationForm({ step, setStep, onAddressSelect }: EstimationFor
 
   // Validation checks for each step
   const isStep1Valid = addressValid && postcodeValid && cityValid;
-  const isStep2Valid =
-    surfaceValid &&
-    propertyTypeValid &&
-    roomsValid &&
-    conditionValid &&
-    yearBuiltValid;
+  const isStep2Valid = propertyTypeValid;
   const isStep3Valid =
+    surfaceValid && roomsValid && conditionValid && yearBuiltValid;
+  const isStep4Valid =
     firstnameValid && lastnameValid && emailValid && phoneValid && consent;
 
   const handleSuggestionClick = (index: number) => {
@@ -226,7 +224,7 @@ export function EstimationForm({ step, setStep, onAddressSelect }: EstimationFor
       loading: "Estimation en cours...",
       success: (result) => {
         if (!result) throw new Error("Aucune estimation trouvée.");
-        setStep(4);
+        setStep(5);
         return `Prix estimé : ${result.estimatedPrice.toLocaleString("fr-FR", {
           style: "currency",
           currency: "EUR",
@@ -272,9 +270,20 @@ export function EstimationForm({ step, setStep, onAddressSelect }: EstimationFor
             </>
           )}
           {step === 2 && (
+            <PropertyTypeStep
+              propertyType={propertyType}
+              propertyTypeValid={propertyTypeValid}
+              touched={touched}
+              setPropertyType={setPropertyType}
+              setTouched={setTouched}
+              onBack={() => setStep(1)}
+              onNext={() => setStep(3)}
+              isValid={isStep2Valid}
+            />
+          )}
+          {step === 3 && (
             <PropertyStep
               surface={surface}
-              propertyType={propertyType}
               rooms={rooms}
               condition={condition}
               totalSurface={totalSurface}
@@ -299,7 +308,6 @@ export function EstimationForm({ step, setStep, onAddressSelect }: EstimationFor
               occupation={occupation}
               urgency={urgency}
               surfaceValid={surfaceValid}
-              propertyTypeValid={propertyTypeValid}
               roomsValid={roomsValid}
               conditionValid={conditionValid}
               yearBuiltValid={yearBuiltValid}
@@ -307,7 +315,6 @@ export function EstimationForm({ step, setStep, onAddressSelect }: EstimationFor
               setSurface={setSurface}
               setTotalSurface={setTotalSurface}
               setBuildableSurface={setBuildableSurface}
-              setPropertyType={setPropertyType}
               setRooms={setRooms}
               setBathrooms={setBathrooms}
               setLevels={setLevels}
@@ -332,12 +339,12 @@ export function EstimationForm({ step, setStep, onAddressSelect }: EstimationFor
               setOccupation={setOccupation}
               setUrgency={setUrgency}
               setTouched={setTouched}
-              onBack={() => setStep(1)}
-              onNext={() => setStep(3)}
-              isValid={isStep2Valid}
+              onBack={() => setStep(2)}
+              onNext={() => setStep(4)}
+              isValid={isStep3Valid}
             />
           )}
-          {step === 3 && (
+          {step === 4 && (
             <ContactStep
               firstname={firstname}
               lastname={lastname}
@@ -355,14 +362,14 @@ export function EstimationForm({ step, setStep, onAddressSelect }: EstimationFor
               setPhone={setPhone}
               setConsent={setConsent}
               setTouched={setTouched}
-              onBack={() => setStep(2)}
+              onBack={() => setStep(3)}
               onSubmit={handleSubmit}
-              isValid={isStep3Valid}
+              isValid={isStep4Valid}
             />
           )}
 
-          {/* Step 4 : Finished */}
-          {step === 4 && (
+          {/* Step 5 : Finished */}
+          {step === 5 && (
             <>
               <FinishStep
                 onFinish={() => {
