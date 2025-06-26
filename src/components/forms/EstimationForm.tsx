@@ -164,7 +164,7 @@ export function EstimationForm() {
   };
 
   return (
-    <Card className="relative shadow-lg duration-300 overflow-hidden">
+    <Card className="relative duration-300 overflow-hidden">
       <ProgressBar step={step} />
       <CardHeader>
         <CardTitle className="text-xl font-semibold text-gray-900">

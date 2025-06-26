@@ -3,9 +3,20 @@ import type { NextConfig } from "next";
 const isDev = process.env.NODE_ENV === "development";
 
 const ContentSecurityPolicy = isDev
-  ? `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://api-adresse.data.gouv.fr;`
-  : `default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://api-adresse.data.gouv.fr;`;
-
+  ? `
+    default-src 'self';
+    script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.apple-mapkit.com;
+    style-src  'self' 'unsafe-inline';
+    img-src    'self' data: https:;
+    connect-src 'self' https://api-adresse.data.gouv.fr https://*.maptiles.apple.com;
+  `
+  : `
+    default-src 'self';
+    script-src 'self' 'unsafe-inline' https://cdn.apple-mapkit.com;
+    style-src  'self' 'unsafe-inline';
+    img-src    'self' data: https:;
+    connect-src 'self' https://api-adresse.data.gouv.fr https://*.maptiles.apple.com;
+  `;
 
 const securityHeaders = [
   {

@@ -17,6 +17,7 @@
     "clsx": "^2.1.1",
     "framer-motion": "^12.19.1",
     "fs": "0.0.1-security",
+    "jwt-simple": "^0.5.6",
     "lucide-react": "^0.523.0",
     "next": "15.3.4",
     "next-themes": "^0.4.6",
