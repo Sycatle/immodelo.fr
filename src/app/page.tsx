@@ -31,8 +31,8 @@ export default function EstimationPage() {
         </div>
       </header>
 
-      <div className="grid lg:grid-cols-12">
-        <div className="flex flex-col gap-4 flex-1 items-center relative lg:col-span-7 mx-auto lg:overflow-y-auto bg-white">
+      <div className="grid lg:grid-cols-12 overflow-hidden h-screen">
+        <div className="flex flex-col gap-4 flex-1 items-center relative lg:col-span-7 mx-auto min-h-screen overflow-y-auto w-full bg-white">
           <EstimationForm
             step={step}
             setStep={setStep}

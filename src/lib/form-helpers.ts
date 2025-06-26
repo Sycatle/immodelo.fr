@@ -36,10 +36,7 @@ export const isValidPropertyType = (type: string): boolean =>
   [
     "maison",
     "appartement",
-    "duplex",
-    "triplex",
-    "loft",
-    "hotel-particulier",
+    "terrain",
   ].includes(type);
 
 export const isValidRooms = (rooms: string): boolean =>
