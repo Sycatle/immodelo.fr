@@ -27,6 +27,13 @@ import {
 import { useAddressSuggestions } from "@/lib/useAddressSuggestions";
 import FinishStep from "./steps/FinishStep";
 
+const stepTitles = [
+  "Étape 1 : Adresse du bien",
+  "Étape 2 : À propos de ce bien",
+  "Étape 3 : Caractéristiques du bien",
+  "Étape 4 : Mes coordonnées",
+];
+
 interface EstimationFormProps {
   step: number;
   setStep: (step: number) => void;
@@ -241,7 +248,7 @@ export function EstimationForm({
     <AnimatePresence mode="wait">
       {step === 1 && (
         <StepLayout
-          title="Obtenir mon estimation"
+          title={stepTitles[0]}
           formId="step1"
           nextDisabled={!isStep1Valid}
         >
@@ -271,7 +278,7 @@ export function EstimationForm({
       )}
       {step === 2 && (
         <StepLayout
-          title="Obtenir mon estimation"
+          title={stepTitles[1]}
           formId="step2"
           onBack={() => setStep(1)}
           nextDisabled={!isStep2Valid}
@@ -290,7 +297,7 @@ export function EstimationForm({
       )}
       {step === 3 && (
         <StepLayout
-          title="Obtenir mon estimation"
+          title={stepTitles[2]}
           formId="step3"
           onBack={() => setStep(2)}
           nextDisabled={!isStep3Valid}
@@ -362,7 +369,7 @@ export function EstimationForm({
       )}
       {step === 4 && (
         <StepLayout
-          title="Obtenir mon estimation"
+          title={stepTitles[3]}
           formId="step4"
           onBack={() => setStep(3)}
           nextDisabled={!isStep4Valid}
