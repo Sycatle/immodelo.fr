@@ -18,12 +18,28 @@ export interface EstimateInput {
   postcode: string;
   city: string;
   surface: number | string;
+  totalSurface?: number;
+  buildableSurface?: number;
   propertyType: string;
   rooms: number;
+  bathrooms?: number;
+  levels?: number;
   condition: string;
+  partyWalls?: boolean;
+  basement?: boolean;
+  parkingSpots?: number;
+  outbuildings?: number;
+  exceptionalView?: boolean;
+  pool?: boolean;
+  sewer?: boolean;
   outdoorSpaces: string[]; // à la place de boolean
-  parking: string; // à la place de boolean
+  dpe?: string;
   yearBuilt: number;
+  houseQuality?: string;
+  brightness?: string;
+  noise?: string;
+  transportProximity?: string;
+  roofQuality?: string;
   occupation: string;
   urgency: string;
   firstname: string;
@@ -75,7 +91,101 @@ export default function estimatePrice(
   if (count === 0) return null;
 
   const avgPricePerM2 = totalPricePerM2 / count;
-  const estimatedPrice = Math.round(avgPricePerM2 * targetSurface);
+  let estimatedPrice = avgPricePerM2 * targetSurface;
+
+  let modifier = 0;
+  switch (data.condition) {
+    case "Comme neuf":
+      modifier += 0.05;
+      break;
+    case "Quelques travaux":
+      modifier -= 0.1;
+      break;
+    case "Travaux importants":
+      modifier -= 0.2;
+      break;
+  }
+
+  if (data.pool) modifier += 0.05;
+  if (data.exceptionalView) modifier += 0.05;
+  if (data.partyWalls) modifier -= 0.02;
+  if (data.basement) estimatedPrice += 5000;
+  if (data.parkingSpots) estimatedPrice += data.parkingSpots * 8000;
+  if (data.outbuildings) estimatedPrice += data.outbuildings * 5000;
+  if (!data.sewer) modifier -= 0.02;
+
+  switch (data.houseQuality) {
+    case "Supérieure":
+      modifier += 0.05;
+      break;
+    case "Inférieure":
+      modifier -= 0.05;
+      break;
+  }
+
+  switch (data.brightness) {
+    case "Très clair":
+      modifier += 0.03;
+      break;
+    case "Clair":
+      modifier += 0.02;
+      break;
+    case "Peu clair":
+      modifier -= 0.02;
+      break;
+    case "Sombre":
+      modifier -= 0.05;
+      break;
+  }
+
+  switch (data.noise) {
+    case "Très calme":
+      modifier += 0.03;
+      break;
+    case "Calme":
+      modifier += 0.02;
+      break;
+    case "Bruit":
+    case "Bruyant":
+      modifier -= 0.02;
+      break;
+    case "Très bruyant":
+      modifier -= 0.05;
+      break;
+  }
+
+  switch (data.transportProximity) {
+    case "Très proche":
+      modifier += 0.03;
+      break;
+    case "Proche":
+      modifier += 0.02;
+      break;
+    case "Éloigné":
+      modifier -= 0.02;
+      break;
+    case "Très éloigné":
+      modifier -= 0.05;
+      break;
+  }
+
+  switch (data.roofQuality) {
+    case "Refaite à neuf":
+      modifier += 0.03;
+      break;
+    case "À rénover":
+      modifier -= 0.05;
+      break;
+  }
+
+  estimatedPrice = estimatedPrice * (1 + modifier);
+
+  if (data.buildableSurface)
+    estimatedPrice += data.buildableSurface * avgPricePerM2 * 0.3;
+  if (data.totalSurface && data.totalSurface > targetSurface)
+    estimatedPrice += (data.totalSurface - targetSurface) * avgPricePerM2 * 0.1;
+
+  estimatedPrice = Math.round(estimatedPrice);
 
   return {
     estimatedPrice,

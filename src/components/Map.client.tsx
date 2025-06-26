@@ -7,7 +7,6 @@ import "leaflet/dist/leaflet.css";
 
 interface MapProps {
   position: [number, number];
-  label: string;
 }
 
 function ChangeView({ center }: { center: [number, number] }) {
@@ -20,7 +19,7 @@ function ChangeView({ center }: { center: [number, number] }) {
   return null;
 }
 
-export function Map({ position, label}: MapProps) {
+export function Map({ position }: MapProps) {
   return (
     <MapContainer
       center={position}

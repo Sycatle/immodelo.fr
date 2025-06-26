@@ -38,6 +38,9 @@ export const isValidPropertyType = (type: string): boolean =>
 export const isValidRooms = (rooms: string): boolean =>
   /^\d+$/.test(rooms) && Number(rooms) >= 0;
 
+export const isValidPositiveInt = (val: string): boolean =>
+  /^\d+$/.test(val) && Number(val) >= 0;
+
 export const isValidCondition = (c: string): boolean => c.trim().length > 0;
 
 export const isValidYearBuilt = (y: string): boolean =>
