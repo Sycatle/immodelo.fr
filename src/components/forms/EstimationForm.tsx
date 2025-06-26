@@ -45,6 +45,32 @@ export function EstimationForm({ onAddressSelect }: EstimationFormProps) {
     setAddress(parsed.street);
     if (parsed.postcode) setPostcode(parsed.postcode);
     if (parsed.city) setCity(parsed.city);
+
+    if (onAddressSelect) {
+      const isOk =
+        isValidAddress(parsed.street) &&
+        isValidPostcode(parsed.postcode) &&
+        isValidCity(parsed.city);
+      if (isOk) {
+        const query = `${parsed.street}, ${parsed.postcode} ${parsed.city}`;
+        fetch(
+          `https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(query)}&limit=1`
+        )
+          .then((res) => (res.ok ? res.json() : null))
+          .then((data) => {
+            const feature = data?.features?.[0];
+            if (feature) {
+              onAddressSelect(query, [
+                feature.geometry.coordinates[1],
+                feature.geometry.coordinates[0],
+              ]);
+            }
+          })
+          .catch(() => {
+            /* ignore errors */
+          });
+      }
+    }
   };
 
   // Step 2 states
