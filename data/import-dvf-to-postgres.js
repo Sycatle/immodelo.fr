@@ -1,15 +1,8 @@
 // data/import-dvf-to-postgres.js
 const fs = require("fs");
-const { Pool } = require("pg");
+const pool = require("./db");
 
 const DATA_FILE = __dirname + "/dvf_72.json";
-const pool = new Pool({
-  host:     "localhost",
-  port:     5433,
-  user:     "dvf",
-  password: "dvfpass",
-  database: "dvfdb",
-});
 
 async function setup() {
   await pool.query(`
