@@ -33,7 +33,14 @@ export const isValidSurface = (surface: string): boolean =>
   /^\d+$/.test(surface) && Number(surface) > 5;
 
 export const isValidPropertyType = (type: string): boolean =>
-  ["maison", "appartement", "terrain", "autre"].includes(type);
+  [
+    "maison",
+    "appartement",
+    "duplex",
+    "triplex",
+    "loft",
+    "hotel-particulier",
+  ].includes(type);
 
 export const isValidRooms = (rooms: string): boolean =>
   /^\d+$/.test(rooms) && Number(rooms) >= 0;
