@@ -11,6 +11,13 @@ const Map = dynamic(
   { ssr: false }
 );
 
+const stepTitles = [
+  "Étape 1 : Adresse du bien",
+  "Étape 2 : À propos de ce bien",
+  "Étape 3 : Caractéristiques du bien",
+  "Étape 4 : Mes coordonnées",
+];
+
 export default function EstimationPage() {
   const [, setAddressLabel] = useState("Le Mans");
   const [coords, setCoords] = useState<[number, number]>([48.0061, 0.1996]);
@@ -28,6 +35,9 @@ export default function EstimationPage() {
           </a>
 
           <ProgressBar step={step} />
+          <span className="ml-4 text-sm font-medium text-gray-700">
+            {stepTitles[step - 1]}
+          </span>
         </div>
       </header>
 
