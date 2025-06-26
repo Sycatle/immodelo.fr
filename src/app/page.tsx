@@ -3,7 +3,12 @@
 import { useEffect } from "react";
 import { EstimationForm } from "@/components/forms/EstimationForm";
 import { HouseIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import dynamic from "next/dynamic";
+
+const Map = dynamic(
+  () => import("@/components/Map.client").then((mod) => mod.Map),
+  { ssr: false }
+);
 
 export default function EstimationPage() {
   useEffect(() => {
@@ -53,8 +58,8 @@ export default function EstimationPage() {
       </div>
 
       {/* === ici on remplace l’image par la carte === */}
-      <div className="relative hidden lg:block">
-        <div id="apple-map" className="absolute inset-0 h-full w-full" />
+      <div className="relative hidden lg:block bg-gray-300">
+        <Map />
       </div>
     </div>
   );
