@@ -1,92 +1,119 @@
 # Immodelo
 
-Immodelo est une mini application Next.js permettant d'obtenir une estimation rapide pour un bien immobilier situé dans le département de la Sarthe (72). Le projet utilise les nouvelles fonctionnalités de l'App Router de Next.js 15 et Tailwind CSS pour la partie visuelle.
+Immodelo est une application d'estimation immobilière développée avec **Next.js 15** et **TypeScript**. Elle exploite la nouvelle App Router pour servir un formulaire multiétapes permettant d'obtenir rapidement une valeur indicatrice pour un bien situé dans la Sarthe (72).
+
+## Stack technique
+
+- **Next.js 15** avec le mode App Router et les Server Actions
+- **React 19** et **TypeScript 5**
+- **Tailwind CSS 4** pour la mise en page (animations via `tw-animate-css`)
+- **Radix UI** pour les composants accessibles
+- **Framer Motion** pour les transitions de formulaire
+- **PostgreSQL 15** (via Docker) et `node-postgres` pour l'accès aux données DVF
+- **pnpm** pour la gestion des dépendances
 
 ## Installation
+
+1. Assurez-vous d'avoir **Node.js ≥18** et `pnpm` installés.
+2. Installez les dépendances du projet :
 
 ```bash
 pnpm install
 ```
 
-## Lancement du serveur de développement
+3. Lancez le serveur de développement :
 
 ```bash
 pnpm dev
 ```
 
-Le site est alors accessible sur `http://localhost:3000`.
+L'application est disponible sur [http://localhost:3000](http://localhost:3000).
 
-## Mise à jour de la base DVF
+## Mise à jour des données DVF
 
-Les estimations sont basées sur l'extraction 2024 de la base **Demandes de valeurs foncières** (DVF) disponible sur data.gouv.fr. Le script `data/extra-72.js` télécharge l'archive officielle, la décompresse puis filtre uniquement les ventes dont le code postal commence par `72`. Le résultat est enregistré dans `data/dvf_72.json`.
+Les estimations reposent sur la base **Demandes de valeurs foncières** (DVF) des années 2022, 2023 et 2024. Le script `data/extra-72.js` télécharge les archives depuis data.gouv.fr, les décompresse et filtre toutes les ventes dont le code postal commence par `72` avant d'enregistrer le résultat dans `data/dvf_72.json`.
 
 ```bash
 node data/extra-72.js
 ```
 
-## Stockage DVF avec PostgreSQL et Docker
+### Import PostgreSQL avec Docker
 
-1. Démarrez PostgreSQL via Docker :
+1. Démarrez la base locale :
 
 ```bash
 docker-compose up -d db
 ```
 
-2. Installez les dépendances puis importez les données :
+2. Créez la table et importez les ventes :
 
 ```bash
-pnpm install
 node data/import-dvf-to-postgres.js
 ```
 
-La base `dvfdb` contient alors la table `dvf_sales` avec toutes les ventes du département 72.
-
+Une base `dvfdb` est alors accessible sur `localhost:5433` avec la table `dvf_sales` contenant les transactions filtrées.
 
 ## Fonctionnement de l'application
 
-La page d'accueil contient un composant `Hero` qui affiche un formulaire d'estimation en trois étapes :
+La page d'accueil présente un formulaire en six étapes (« Adresse », « À propos du bien », « Informations principales », etc.) dont la validation est réalisée côté client à l'aide de Zod. Les suggestions d'adresse proviennent du service `api-adresse.data.gouv.fr` et une carte (React Leaflet) se centre automatiquement sur le point saisi.
 
-1. **Adresse** – saisie de l'adresse avec suggestions provenant de `api-adresse.data.gouv.fr`.
-2. **Informations sur le bien** – surface, type de bien (maison/appartement/terrain/autre), nombre de chambres et divers critères complémentaires.
-3. **Contact** – coordonnées de l'utilisateur permettant de recevoir le résultat.
+À l'envoi du formulaire, les données sont envoyées en `POST` à l'API `/api/estimate`. Cette route est protégée par un petit rate limiter et invoque la fonction `estimatePrice` du module `src/lib/estimate.ts`.
 
-Une barre de progression indique l'étape en cours et chaque champ de formulaire est validé en temps réel. Une fois les informations remplies, un appel `POST` est effectué vers `/api/estimate`.
+## Algorithme d'estimation
 
-## Détail du calcul d'estimation
+La fonction `estimatePrice` applique les étapes suivantes :
 
-Le module `src/lib/estimate.ts` (utilisé à la fois côté serveur et dans l'API) contient la logique suivante :
+1. **Sélection des ventes pertinentes** dans `dvf_sales` :
+   - même code postal et même type de bien,
+   - commune identique après normalisation (suppression des accents, etc.),
+   - surfaces et valeurs non nulles et supérieures à 10.
+2. **Calcul du prix au m²** pour chaque vente retenue puis exclusion des valeurs aberrantes. Les ventes dont le prix au m² s'écarte de plus de 1,5 écart-type autour de la médiane sont ignorées.
+3. **Médiane finale** : une nouvelle médiane du prix au m² est calculée sur l'échantillon filtré.
+4. **Application de coefficients légers** selon l'état du bien et ses équipements :
+   - +1 % si le bien est « Comme neuf », −3 % si « Travaux importants »,
+   - +1 % s'il y a une piscine,
+   - −1 % en l'absence de tout-à-l'égout,
+   - +1 % pour un logement très lumineux,
+   - −2 % si le quartier est très bruyant.
+   Le cumul est borné à ±5 %.
+5. **Bonus fixes** :
+   - 4 000 € par place de parking (dans la limite de 2),
+   - 3 000 € par dépendance (max 2),
+   - petit bonus de terrain si la surface totale dépasse la surface habitable.
+6. **Retrait des frais** : 7 % sont soustraits pour simuler les frais d'agence et de notaire.
 
-1. Conversion et nettoyage des données saisies (surface cible, type de bien et code postal).
-2. Lecture de la table `dvf_sales` dans PostgreSQL contenant l'historique des transactions de l'année 2024.
-3. Filtrage de toutes les ventes répondant aux critères :
-   - `nature_mutation` vaut "Vente" ;
-   - le `code_postal` est identique au code saisi ;
-   - `type_local` correspond au type de bien (maison, appartement, …) ;
-   - la surface réelle bâtie est comprise entre 80 % et 120 % de la surface demandée ;
-   - la valeur foncière est supérieure à 10 000 € pour éviter les anomalies.
-4. Pour chaque vente retenue, calcul du prix au m² (valeur foncière ÷ surface).
-5. Calcul de la moyenne de ces prix au m².
-6. Multiplication de cette moyenne par la surface du bien de l'utilisateur pour obtenir le `estimatedPrice` final.
-7. L'API renvoie également le nombre de ventes similaires prises en compte (`similarSalesCount`) et la moyenne du prix au m² (`averagePricePerM2`).
-
-Si aucune vente ne correspond, l'API renvoie `null`.
+La fonction renvoie enfin un objet contenant :
 
 ```ts
-export default async function estimatePrice(data: EstimateInput): Promise<EstimateResult | null> {
-  const targetSurface = parseFloat(String(data.surface));
-  const propertyType = data.propertyType.trim().toLowerCase();
-  const postcode = data.postcode.trim();
-  // ...
+{
+  estimatedPrice: number,       // prix final arrondi
+  similarSalesCount: number,    // nombre de ventes comparables utilisées
+  averagePricePerM2: number     // médiane du prix au m² retenue
 }
 ```
 
-## Architecture
+Si moins de trois ventes comparables sont disponibles, `null` est retourné.
 
-- `src/app` : pages Next.js (App Router) et route API `api/estimate`.
-- `src/components` : composants React (formulaire, UI, etc.).
-- `src/lib` : fonctions utilitaires dont `estimate.ts`.
-- `data` : script et fichier JSON contenant l'extrait DVF.
+## Structure du projet
+
+```
+src/
+├─ app/                 Pages Next.js et route API
+├─ components/
+│  ├─ forms/            Formulaire d'estimation (React + Framer Motion)
+│  ├─ sections/         Sections de page (Hero, etc.)
+│  └─ ui/               Petits composants visuels basés sur Radix
+├─ lib/                 Utilitaires (estimate.ts, db.ts, validation.ts ...)
+public/                 Fichiers statiques
+data/                   Scripts Node pour la base DVF
+```
+
+D'autres fichiers importants :
+
+- `docker-compose.yml` : configuration PostgreSQL (port 5433, utilisateur `dvf`/`dvfpass`).
+- `tailwind.config.js` et `postcss.config.mjs` : configuration Tailwind CSS.
 
 ## Licence
 
-Ce projet est fourni sans garantie. Les données DVF sont des données publiques disponibles sur [data.gouv.fr](https://www.data.gouv.fr). L'estimation fournie est indicative et ne remplace pas l'expertise d'un professionnel.
+Ce projet est fourni sans garantie. Les données DVF sont publiques ([data.gouv.fr](https://www.data.gouv.fr)) et l'estimation produite reste indicative, elle ne remplace pas l'avis d'un professionnel de l'immobilier.
+
