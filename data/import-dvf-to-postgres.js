@@ -1,13 +1,14 @@
-const fs = require('fs');
-const { Pool } = require('pg');
+// data/import-dvf-to-postgres.js
+const fs = require("fs");
+const { Pool } = require("pg");
 
-const DATA_FILE = __dirname + '/dvf_72.json';
+const DATA_FILE = __dirname + "/dvf_72.json";
 const pool = new Pool({
-  host: process.env.PGHOST || 'localhost',
-  port: process.env.PGPORT || 5432,
-  user: process.env.PGUSER || 'dvf',
-  password: process.env.PGPASSWORD || 'dvfpass',
-  database: process.env.PGDATABASE || 'dvfdb'
+  host:     "localhost",
+  port:     5433,
+  user:     "dvf",
+  password: "dvfpass",
+  database: "dvfdb",
 });
 
 async function setup() {
@@ -31,50 +32,78 @@ async function setup() {
 }
 
 async function importData() {
-  const raw = fs.readFileSync(DATA_FILE, 'utf-8');
+  const raw = fs.readFileSync(DATA_FILE, "utf-8");
   const data = JSON.parse(raw);
   const client = await pool.connect();
+
   try {
-    await client.query('BEGIN');
+    await client.query("BEGIN");
+
+    let importedCount = 0;
     for (const record of data) {
+      // Ignore si champs indispensables manquants
+      if (!record.date_mutation || !record.valeur_fonciere) {
+        continue;
+      }
+
+      // Conversion et nettoyage des valeurs
+      const date = record.date_mutation
+        .split("/")
+        .reverse()
+        .join("-");
+      const valeur = parseFloat(
+        record.valeur_fonciere?.replace(",", ".") || "0"
+      );
+      const surfaceBati = parseFloat(
+        (record.surface_reelle_bati?.replace(",", ".") || "0")
+      );
+      const nbPieces = record.nombre_pieces_principales
+        ? parseInt(record.nombre_pieces_principales, 10)
+        : null;
+      const surfaceTerrain = record.surface_terrain
+        ? parseFloat(record.surface_terrain.replace(",", "."))
+        : null;
+
       await client.query(
         `INSERT INTO dvf_sales (
-          date_mutation,
-          nature_mutation,
-          valeur_fonciere,
-          no_voie,
-          type_de_voie,
-          voie,
-          code_postal,
-          commune,
-          type_local,
-          surface_reelle_bati,
-          nombre_pieces_principales,
-          surface_terrain
-        ) VALUES (
-          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12
-        )`,
+           date_mutation,
+           nature_mutation,
+           valeur_fonciere,
+           no_voie,
+           type_de_voie,
+           voie,
+           code_postal,
+           commune,
+           type_local,
+           surface_reelle_bati,
+           nombre_pieces_principales,
+           surface_terrain
+         ) VALUES (
+           $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12
+         )`,
         [
-          record.date_mutation.split('/').reverse().join('-'),
-          record.nature_mutation,
-          record.valeur_fonciere.replace(',', '.'),
-          record.no_voie,
-          record.type_de_voie,
-          record.voie,
-          record.code_postal,
-          record.commune,
-          record.type_local,
-          record.surface_reelle_bati,
-          record.nombre_pieces_principales,
-          record.surface_terrain
+          date,
+          record.nature_mutation || null,
+          valeur,
+          record.no_voie || null,
+          record.type_de_voie || null,
+          record.voie || null,
+          record.code_postal || null,
+          record.commune || null,
+          record.type_local || null,
+          surfaceBati,
+          nbPieces,
+          surfaceTerrain,
         ]
       );
+      importedCount++;
     }
-    await client.query('COMMIT');
-    console.log(`Imported ${data.length} records.`);
+
+    await client.query("COMMIT");
+    console.log(`✅ Imported ${importedCount} records.`);
   } catch (err) {
-    await client.query('ROLLBACK');
-    console.error('Import failed:', err);
+    await client.query("ROLLBACK");
+    console.error("❌ Import failed:", err);
   } finally {
     client.release();
     await pool.end();
