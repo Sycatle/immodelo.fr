@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AnimatePresence } from "framer-motion";
-import { ProgressBar } from "./ProgressBar";
 import { AddressStep } from "./steps/AddressStep";
 import { PropertyStep } from "./steps/PropertyStep";
 import { ContactStep } from "./steps/ContactStep";
@@ -28,10 +27,11 @@ import { useAddressSuggestions } from "@/lib/useAddressSuggestions";
 import FinishStep from "./steps/FinishStep";
 
 interface EstimationFormProps {
+  step: number;
+  setStep: (step: number) => void;
   onAddressSelect?: (label: string, coords: [number, number]) => void;
 }
-export function EstimationForm({ onAddressSelect }: EstimationFormProps) {
-  const [step, setStep] = useState(1);
+export function EstimationForm({ step, setStep, onAddressSelect }: EstimationFormProps) {
 
   // Step 1 states
   const [address, setAddress] = useState("");
@@ -200,7 +200,6 @@ export function EstimationForm({ onAddressSelect }: EstimationFormProps) {
 
   return (
     <Card className="relative duration-300 overflow-hidden">
-      <ProgressBar step={step} />
       <CardHeader>
         <CardTitle className="text-xl font-semibold text-gray-900">
           Obtenir mon estimation
