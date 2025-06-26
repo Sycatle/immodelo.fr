@@ -18,33 +18,33 @@ export default function EstimationPage() {
 
   return (
     <>
-      <header className="flex gap-2 justify-start px-4 lg:px-6 py-4 bg-white border-b fixed top-0 z-50 shadow-sm w-full">
-        <a href="#" className="flex items-center gap-2 font-medium">
-          <div className="bg-primary text-primary-foreground flex h-6 w-6 items-center justify-center rounded-md">
-            <HouseIcon className="h-4 w-4 text-white" />
-          </div>
-          Immodelo
-        </a>
-      </header>
-      <div className="fixed left-0 right-0 top-16 z-40">
-        <div className="relative h-1">
+      <header className="flex  bg-white border-b fixed top-0 z-50 shadow-sm w-full">
+        <div className="relative flex items-center rounded-md gap-2 justify-start px-4 lg:px-6 py-4 w-full">
+          <a href="#" className="flex items-center gap-2 font-medium">
+            <div className="bg-primary text-primary-foreground flex h-6 w-6 items-center justify-center rounded-md">
+              <HouseIcon className="h-4 w-4 text-white" />
+            </div>
+            Immodelo
+          </a>
+
           <ProgressBar step={step} />
         </div>
-      </div>
+      </header>
+
       <div className="grid min-h-screen lg:grid-cols-2">
         <div className="flex flex-col gap-4 relative lg:h-screen lg:overflow-y-auto bg-white">
           <div className="flex flex-1 items-center justify-center px-4 lg:px-6 py-16">
-          <div className="w-full">
-            <EstimationForm
-              step={step}
-              setStep={setStep}
-              onAddressSelect={(label, c) => {
-                setAddressLabel(label);
-                setCoords(c);
-              }}
-            />
+            <div className="w-full">
+              <EstimationForm
+                step={step}
+                setStep={setStep}
+                onAddressSelect={(label, c) => {
+                  setAddressLabel(label);
+                  setCoords(c);
+                }}
+              />
+            </div>
           </div>
-        </div>
         </div>
 
         <div className="relative z-40 hidden lg:block bg-gray-300">

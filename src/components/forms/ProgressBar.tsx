@@ -9,7 +9,7 @@ interface ProgressBarProps {
 export function ProgressBar({ step }: ProgressBarProps) {
   return (
     <motion.div
-      className="absolute top-0 left-0 h-1 bg-orange-500"
+      className="absolute -bottom-1 left-0 h-1 bg-orange-500"
       initial={{ width: 0 }}
       animate={{ width: `${((step - 1) / 3) * 100}%` }}
       exit={{ width: 0 }}
