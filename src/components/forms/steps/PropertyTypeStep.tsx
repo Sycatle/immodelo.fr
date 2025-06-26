@@ -18,10 +18,7 @@ interface PropertyTypeStepProps {
 const options = [
   { value: "maison", label: "Maison" },
   { value: "appartement", label: "Appartement" },
-  { value: "duplex", label: "Duplex" },
-  { value: "triplex", label: "Triplex" },
-  { value: "loft", label: "Loft / Atelier" },
-  { value: "hotel-particulier", label: "Hotel particulier" },
+  { value: "terrain", label: "Terrain" },
 ];
 
 export function PropertyTypeStep({
@@ -57,7 +54,7 @@ export function PropertyTypeStep({
           {options.map((opt) => (
             <label
               key={opt.value}
-              className={`border rounded-md p-4 text-center cursor-pointer select-none ${propertyType === opt.value ? "border-orange-500 ring-2 ring-orange-500" : "border-gray-300"}`}
+              className={`border rounded-md p-4 text-center cursor-pointer select-none duration-200 ${propertyType === opt.value ? "border-orange-500 ring-2 ring-orange-500" : "border-gray-300"}`}
             >
               <input
                 type="radio"

@@ -31,20 +31,16 @@ export default function EstimationPage() {
         </div>
       </header>
 
-      <div className="grid min-h-screen lg:grid-cols-12">
-        <div className="flex flex-col gap-4 relative lg:h-screen lg:col-span-7 lg:justify-end lg:max-w-xl lg:overflow-y-auto bg-white">
-          <div className="flex flex-1 items-center justify-end px-4 lg:px-6 py-16">
-            <div className="w-full">
-              <EstimationForm
-                step={step}
-                setStep={setStep}
-                onAddressSelect={(label, c) => {
-                  setAddressLabel(label);
-                  setCoords(c);
-                }}
-              />
-            </div>
-          </div>
+      <div className="grid lg:grid-cols-12">
+        <div className="flex flex-col gap-4 flex-1 items-center relative lg:col-span-7 mx-auto lg:overflow-y-auto bg-white">
+          <EstimationForm
+            step={step}
+            setStep={setStep}
+            onAddressSelect={(label, c) => {
+              setAddressLabel(label);
+              setCoords(c);
+            }}
+          />
         </div>
 
         <div className="relative z-40 hidden lg:block bg-gray-300 lg:col-span-5">

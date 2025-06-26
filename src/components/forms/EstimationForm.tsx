@@ -32,8 +32,11 @@ interface EstimationFormProps {
   setStep: (step: number) => void;
   onAddressSelect?: (label: string, coords: [number, number]) => void;
 }
-export function EstimationForm({ step, setStep, onAddressSelect }: EstimationFormProps) {
-
+export function EstimationForm({
+  step,
+  setStep,
+  onAddressSelect,
+}: EstimationFormProps) {
   // Step 1 states
   const [address, setAddress] = useState("");
   const [postcode, setPostcode] = useState("");
@@ -155,10 +158,10 @@ export function EstimationForm({ step, setStep, onAddressSelect }: EstimationFor
     setCity(parsed.city);
     clear();
     if (parsed.lat && parsed.lon && onAddressSelect) {
-      onAddressSelect(
-        `${parsed.street}, ${parsed.postcode} ${parsed.city}`,
-        [parsed.lat, parsed.lon]
-      );
+      onAddressSelect(`${parsed.street}, ${parsed.postcode} ${parsed.city}`, [
+        parsed.lat,
+        parsed.lon,
+      ]);
     }
   };
 
@@ -237,9 +240,14 @@ export function EstimationForm({ step, setStep, onAddressSelect }: EstimationFor
   return (
     <AnimatePresence mode="wait">
       {step === 1 && (
-        <StepLayout title="Obtenir mon estimation" formId="step1" nextDisabled={!isStep1Valid}>
+        <StepLayout
+          title="Obtenir mon estimation"
+          formId="step1"
+          nextDisabled={!isStep1Valid}
+        >
           <p className="text-gray-700 mb-4">
-            Remplissez ce formulaire pour recevoir une estimation gratuite de votre bien immobilier.
+            Remplissez ce formulaire pour recevoir une estimation gratuite de
+            votre bien immobilier.
           </p>
           <AddressStep
             address={address}
@@ -275,6 +283,7 @@ export function EstimationForm({ step, setStep, onAddressSelect }: EstimationFor
             setPropertyType={setPropertyType}
             setTouched={setTouched}
             onNext={() => setStep(3)}
+            isValid={isStep2Valid}
             formId="step2"
           />
         </StepLayout>
@@ -292,50 +301,53 @@ export function EstimationForm({ step, setStep, onAddressSelect }: EstimationFor
             condition={condition}
             totalSurface={totalSurface}
             buildableSurface={buildableSurface}
-              outdoorSpaces={outdoorSpaces}
-              partyWalls={partyWalls}
-              basement={basement}
-              hasParking={hasParking}
-              parkingSpots={parkingSpots}
-              hasOutbuildings={hasOutbuildings}
-              outbuildings={outbuildings}
-              exceptionalView={exceptionalView}
-              pool={pool}
-              sewer={sewer}
-              dpe={dpe}
-              yearBuilt={yearBuilt}
-              houseQuality={houseQuality}
-              brightness={brightness}
-              noise={noise}
-              transportProximity={transportProximity}
-              roofQuality={roofQuality}
-              occupation={occupation}
-              urgency={urgency}
-              surfaceValid={surfaceValid}
-              roomsValid={roomsValid}
-              conditionValid={conditionValid}
-              yearBuiltValid={yearBuiltValid}
-              touched={touched}
-              setSurface={setSurface}
-              setTotalSurface={setTotalSurface}
-              setBuildableSurface={setBuildableSurface}
-              setRooms={setRooms}
-              setBathrooms={setBathrooms}
-              setLevels={setLevels}
-              setCondition={setCondition}
-              setOutdoorSpaces={setOutdoorSpaces}
-              setPartyWalls={setPartyWalls}
-              setBasement={setBasement}
-              setHasParking={setHasParking}
-              setParkingSpots={setParkingSpots}
-              setHasOutbuildings={setHasOutbuildings}
-              setOutbuildings={setOutbuildings}
-              setExceptionalView={setExceptionalView}
-              setPool={setPool}
-              setSewer={setSewer}
-              setDpe={setDpe}
-              setYearBuilt={setYearBuilt}
-              setHouseQuality={setHouseQuality}
+            outdoorSpaces={outdoorSpaces}
+            partyWalls={partyWalls}
+            basement={basement}
+            hasParking={hasParking}
+            parkingSpots={parkingSpots}
+            hasOutbuildings={hasOutbuildings}
+            outbuildings={outbuildings}
+            exceptionalView={exceptionalView}
+            bathrooms={bathrooms}
+            levels={levels}
+            isValid={isStep3Valid}
+            pool={pool}
+            sewer={sewer}
+            dpe={dpe}
+            yearBuilt={yearBuilt}
+            houseQuality={houseQuality}
+            brightness={brightness}
+            noise={noise}
+            transportProximity={transportProximity}
+            roofQuality={roofQuality}
+            occupation={occupation}
+            urgency={urgency}
+            surfaceValid={surfaceValid}
+            roomsValid={roomsValid}
+            conditionValid={conditionValid}
+            yearBuiltValid={yearBuiltValid}
+            touched={touched}
+            setSurface={setSurface}
+            setTotalSurface={setTotalSurface}
+            setBuildableSurface={setBuildableSurface}
+            setRooms={setRooms}
+            setBathrooms={setBathrooms}
+            setLevels={setLevels}
+            setCondition={setCondition}
+            setOutdoorSpaces={setOutdoorSpaces}
+            setPartyWalls={setPartyWalls}
+            setBasement={setBasement}
+            setHasParking={setHasParking}
+            setParkingSpots={setParkingSpots}
+            setHasOutbuildings={setHasOutbuildings}
+            setOutbuildings={setOutbuildings}
+            setExceptionalView={setExceptionalView}
+            setPool={setPool}
+            setSewer={setSewer}
+            setDpe={setDpe}
+            setYearBuilt={setYearBuilt}
+            setHouseQuality={setHouseQuality}
             setBrightness={setBrightness}
             setNoise={setNoise}
             setTransportProximity={setTransportProximity}
@@ -361,12 +373,12 @@ export function EstimationForm({ step, setStep, onAddressSelect }: EstimationFor
             email={email}
             phone={phone}
             consent={consent}
-              firstnameValid={firstnameValid}
-              lastnameValid={lastnameValid}
-              emailValid={emailValid}
-              phoneValid={phoneValid}
-              touched={touched}
-              setFirstname={setFirstname}
+            firstnameValid={firstnameValid}
+            lastnameValid={lastnameValid}
+            emailValid={emailValid}
+            phoneValid={phoneValid}
+            touched={touched}
+            setFirstname={setFirstname}
             setLastname={setLastname}
             setEmail={setEmail}
             setPhone={setPhone}
@@ -382,60 +394,60 @@ export function EstimationForm({ step, setStep, onAddressSelect }: EstimationFor
       {step === 5 && (
         <>
           <FinishStep
-                onFinish={() => {
-                  setStep(1);
-                  setAddress("");
-                  setPostcode("");
-                  setCity("");
-                  setSurface("");
-                  setPropertyType("");
-                  setRooms("");
-                  setCondition("");
-                  setOutdoorSpaces([]);
-                  setTotalSurface("");
-                  setBuildableSurface("");
-                  setBathrooms("");
-                  setLevels("");
-                  setPartyWalls(false);
-                  setBasement(false);
-                  setHasParking(false);
-                  setParkingSpots("");
-                  setHasOutbuildings(false);
-                  setOutbuildings("");
-                  setExceptionalView(false);
-                  setPool(false);
-                  setSewer(false);
-                  setDpe("");
-                  setYearBuilt("");
-                  setHouseQuality("");
-                  setBrightness("");
-                  setNoise("");
-                  setTransportProximity("");
-                  setRoofQuality("");
-                  setOccupation("");
-                  setUrgency("");
-                  setFirstname("");
-                  setLastname("");
-                  setEmail("");
-                  setPhone("");
-                  setConsent(false);
-                  setTouched({
-                    address: false,
-                    postcode: false,
-                    city: false,
-                    surface: false,
-                    propertyType: false,
-                    rooms: false,
-                    firstname: false,
-                    lastname: false,
-                    email: false,
-                    phone: false,
-                    consent: false,
-                  });
-                }}
-              />
-            </>
-          )}
-        </AnimatePresence>
+            onFinish={() => {
+              setStep(1);
+              setAddress("");
+              setPostcode("");
+              setCity("");
+              setSurface("");
+              setPropertyType("");
+              setRooms("");
+              setCondition("");
+              setOutdoorSpaces([]);
+              setTotalSurface("");
+              setBuildableSurface("");
+              setBathrooms("");
+              setLevels("");
+              setPartyWalls(false);
+              setBasement(false);
+              setHasParking(false);
+              setParkingSpots("");
+              setHasOutbuildings(false);
+              setOutbuildings("");
+              setExceptionalView(false);
+              setPool(false);
+              setSewer(false);
+              setDpe("");
+              setYearBuilt("");
+              setHouseQuality("");
+              setBrightness("");
+              setNoise("");
+              setTransportProximity("");
+              setRoofQuality("");
+              setOccupation("");
+              setUrgency("");
+              setFirstname("");
+              setLastname("");
+              setEmail("");
+              setPhone("");
+              setConsent(false);
+              setTouched({
+                address: false,
+                postcode: false,
+                city: false,
+                surface: false,
+                propertyType: false,
+                rooms: false,
+                firstname: false,
+                lastname: false,
+                email: false,
+                phone: false,
+                consent: false,
+              });
+            }}
+          />
+        </>
+      )}
+    </AnimatePresence>
   );
 }

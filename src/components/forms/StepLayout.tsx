@@ -17,12 +17,14 @@ export function StepLayout({
   nextDisabled,
 }: StepLayoutProps) {
   return (
-    <div className="relative bg-white overflow-hidden">
-      <header className="px-6 py-6">
+    <div className="relative w-full flex flex-col bg-white overflow-hidden lg:max-w-3xl">
+      <header className="px-6 pt-20 pb-8">
         <h2 className="text-xl font-semibold text-gray-900">{title}</h2>
       </header>
-      <div className="px-6 pb-24 space-y-4">{children}</div>
-      <footer className="fixed bottom-0 left-0 right-0 border-t bg-white px-6 py-4 flex gap-4">
+      {/* on garde un padding bottom assez grand pour que le contenu ne soit pas masqué */}
+      <div className="pb-24 space-y-4 overflow-y-auto w-full px-4 lg:px-6  min-h-screen">{children}</div>
+      {/* on utilise absolute plutôt que fixed, et left-0 pour caler la largeur sur le parent */}
+      <footer className="absolute bottom-0 left-0 w-full border-t bg-white px-6 py-4 flex gap-4">
         {onBack && (
           <Button
             type="button"
@@ -37,7 +39,10 @@ export function StepLayout({
           form={formId}
           type="submit"
           disabled={nextDisabled}
-          className={(onBack ? "w-1/2" : "w-full") + " bg-orange-500 hover:bg-orange-600 text-white"}
+          className={
+            (onBack ? "w-1/2" : "w-full") +
+            " bg-orange-500 hover:bg-orange-600 text-white"
+          }
         >
           Étape suivante
         </Button>
