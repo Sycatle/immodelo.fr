@@ -31,7 +31,7 @@ export default function EstimationPage() {
         </div>
       </header>
 
-      <div className="grid min-h-screen lg:grid-cols-2">
+      <div className="grid min-h-screen lg:grid-cols-2 container mx-auto">
         <div className="flex flex-col gap-4 relative lg:h-screen lg:overflow-y-auto bg-white">
           <div className="flex flex-1 items-center justify-center px-4 lg:px-6 py-16">
             <div className="w-full">
@@ -48,7 +48,7 @@ export default function EstimationPage() {
         </div>
 
         <div className="relative z-40 hidden lg:block bg-gray-300">
-          <Map position={coords} label={addressLabel} />
+          <Map position={coords} />
         </div>
       </div>
 
