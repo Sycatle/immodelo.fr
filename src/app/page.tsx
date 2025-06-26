@@ -14,8 +14,10 @@ const Map = dynamic(
 const stepTitles = [
   "Étape 1 : Adresse du bien",
   "Étape 2 : À propos de ce bien",
-  "Étape 3 : Caractéristiques du bien",
-  "Étape 4 : Mes coordonnées",
+  "Étape 3 : Informations principales du bien",
+  "Étape 4 : Caractéristiques du bien",
+  "Étape 5 : Précisions concernant votre bien",
+  "Étape 6 : Mes coordonnées",
 ];
 
 export default function EstimationPage() {
