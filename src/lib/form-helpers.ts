@@ -48,7 +48,7 @@ export const isValidPositiveInt = (val: string): boolean =>
 export const isValidCondition = (c: string): boolean => c.trim().length > 0;
 
 export const isValidYearBuilt = (y: string): boolean =>
-  y === "" || /^\d{4}$/.test(y.trim());
+  /^\d{4}$/.test(y.trim());
 
 export const isValidName = (name: string): boolean => /^[a-zA-ZÀ-ÿ\s-]+$/.test(name.trim());
 
