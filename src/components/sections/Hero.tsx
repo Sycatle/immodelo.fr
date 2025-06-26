@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { EstimationForm } from "../forms/EstimationForm";
 
 export default function Hero() {
+  const [step, setStep] = useState(1);
   return (
     <section className="bg-white w-full py-20 px-4 sm:px-6 lg:px-8">
       {/* <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
@@ -15,7 +17,7 @@ export default function Hero() {
         </div> */}
 
       <div className="max-w-xl mx-auto">
-        <EstimationForm />
+        <EstimationForm step={step} setStep={setStep} />
       </div>
       {/* </div> */}
     </section>
