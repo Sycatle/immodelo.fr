@@ -16,6 +16,18 @@ pnpm dev
 
 Le site est alors accessible sur `http://localhost:3000`.
 
+## Configuration MapKit
+
+Créez un fichier `.env.local` à la racine du projet et renseignez vos clés Apple MapKit :
+
+```bash
+cp .env.example .env.local
+```
+
+Ouvrez ensuite `.env.local` et remplissez les variables `APPLE_MAPKIT_TEAM_ID`,
+`APPLE_MAPKIT_KEY_ID` et `APPLE_MAPKIT_PRIVATE_KEY`. La clé privée doit être
+écrite sur une seule ligne en remplaçant les retours à la ligne par `\n`.
+
 ## Mise à jour de la base DVF
 
 Les estimations sont basées sur l'extraction 2024 de la base **Demandes de valeurs foncières** (DVF) disponible sur data.gouv.fr. Le script `data/extra-72.js` télécharge l'archive officielle, la décompresse puis filtre uniquement les ventes dont le code postal commence par `72`. Le résultat est enregistré dans `data/dvf_72.json`.

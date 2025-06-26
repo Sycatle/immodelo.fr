@@ -1,24 +1,26 @@
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextRequest, NextResponse } from "next/server";
 import jwt from "jwt-simple";
+import { env } from "@/env";
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  const privateKey = process.env.APPLE_MAPKIT_PRIVATE_KEY!.replace(/\\n/g, "\n");
-  const teamId     = process.env.APPLE_MAPKIT_TEAM_ID!;
-  const keyId      = process.env.APPLE_MAPKIT_KEY_ID!;
-  const now        = Math.floor(Date.now() / 1000);
+export async function GET(req: NextRequest) {
+  const privateKey = env.APPLE_MAPKIT_PRIVATE_KEY.replace(/\\n/g, "\n");
+  const teamId = env.APPLE_MAPKIT_TEAM_ID;
+  const keyId = env.APPLE_MAPKIT_KEY_ID;
+  const now = Math.floor(Date.now() / 1000);
 
   const token = jwt.encode(
     {
       iss: teamId,
       iat: now,
-      exp: now + 3600,       // valable 1 heure
-      origin: `${req.headers.host}`,
+      exp: now + 3600,
+      origin: `${req.headers.get("host")}`,
     },
     privateKey,
     "ES256",
     { kid: keyId }
   );
 
-  res.setHeader("Cache-Control", "s-maxage=300, stale-while-revalidate");
-  res.status(200).json({ token });
+  const res = NextResponse.json({ token });
+  res.headers.set("Cache-Control", "s-maxage=300, stale-while-revalidate");
+  return res;
 }

@@ -3,7 +3,6 @@
 import { useEffect } from "react";
 import { EstimationForm } from "@/components/forms/EstimationForm";
 import { HouseIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 export default function EstimationPage() {
   useEffect(() => {
@@ -16,13 +15,13 @@ export default function EstimationPage() {
         .then((res) => res.json())
         .then(({ token }) => {
           // initialise MapKit
-          // @ts-ignore
+          // @ts-expect-error MapKit is loaded globally by the script tag
           mapkit.init({
             authorizationCallback: (done: (token: string) => void) =>
               done(token),
           });
           // crée la carte centrée sur Le Mans
-          // @ts-ignore
+          // @ts-expect-error MapKit is loaded globally by the script tag
           new mapkit.Map("apple-map", {
             center: new mapkit.Coordinate(48.0061, 0.1996),
             span: new mapkit.CoordinateSpan(0.1, 0.1),
