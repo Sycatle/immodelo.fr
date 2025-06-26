@@ -1,7 +1,6 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
@@ -24,9 +23,8 @@ interface ContactStepProps {
   setPhone: (v: string) => void;
   setConsent: (v: boolean) => void;
   setTouched: React.Dispatch<React.SetStateAction<Touched>>;
-  onBack: () => void;
   onSubmit: (e: React.FormEvent) => void;
-  isValid: boolean;
+  formId: string;
 }
 
 export function ContactStep({
@@ -46,12 +44,12 @@ export function ContactStep({
   setPhone,
   setConsent,
   setTouched,
-  onBack,
   onSubmit,
-  isValid,
+  formId,
 }: ContactStepProps) {
   return (
     <motion.form
+      id={formId}
       key="step3"
       layout
       initial={{ x: 50, opacity: 0 }}
@@ -217,23 +215,6 @@ export function ContactStep({
             Consentement requis
           </p>
         )}
-      </div>
-      <div className="flex justify-between gap-4">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={onBack}
-          className="w-1/2"
-        >
-          Retour
-        </Button>
-        <Button
-          type="submit"
-          disabled={!isValid}
-          className="w-1/2 bg-orange-500 hover:bg-orange-600 text-white"
-        >
-          Envoyer
-        </Button>
       </div>
     </motion.form>
   );

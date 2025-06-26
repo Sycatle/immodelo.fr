@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import StepLayout from "./StepLayout";
 import { AnimatePresence } from "framer-motion";
 import { AddressStep } from "./steps/AddressStep";
 import { PropertyTypeStep } from "./steps/PropertyTypeStep";
@@ -235,59 +235,63 @@ export function EstimationForm({ step, setStep, onAddressSelect }: EstimationFor
   };
 
   return (
-    <Card className="relative duration-300 overflow-hidden">
-      <CardHeader>
-        <CardTitle className="text-xl font-semibold text-gray-900">
-          Obtenir mon estimation
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="relative duration-300">
-        <AnimatePresence mode="wait">
-          {step === 1 && (
-            <>
-              <p className="text-gray-700 mb-4">
-                Remplissez ce formulaire pour recevoir une estimation gratuite
-                de votre bien immobilier.
-              </p>
-              <AddressStep
-                address={address}
-                postcode={postcode}
-                city={city}
-                suggestions={suggestions}
-                addressValid={addressValid}
-                postcodeValid={postcodeValid}
-                cityValid={cityValid}
-                touched={touched}
-                setAddress={setAddress}
-                setPostcode={setPostcode}
-                setCity={setCity}
-                onAddressBlur={handleAddressBlur}
-                setTouched={setTouched}
-                onSuggestionClick={handleSuggestionClick}
-                onNext={() => setStep(2)}
-                isValid={isStep1Valid}
-              />
-            </>
-          )}
-          {step === 2 && (
-            <PropertyTypeStep
-              propertyType={propertyType}
-              propertyTypeValid={propertyTypeValid}
-              touched={touched}
-              setPropertyType={setPropertyType}
-              setTouched={setTouched}
-              onBack={() => setStep(1)}
-              onNext={() => setStep(3)}
-              isValid={isStep2Valid}
-            />
-          )}
-          {step === 3 && (
-            <PropertyStep
-              surface={surface}
-              rooms={rooms}
-              condition={condition}
-              totalSurface={totalSurface}
-              buildableSurface={buildableSurface}
+    <AnimatePresence mode="wait">
+      {step === 1 && (
+        <StepLayout title="Obtenir mon estimation" formId="step1" nextDisabled={!isStep1Valid}>
+          <p className="text-gray-700 mb-4">
+            Remplissez ce formulaire pour recevoir une estimation gratuite de votre bien immobilier.
+          </p>
+          <AddressStep
+            address={address}
+            postcode={postcode}
+            city={city}
+            suggestions={suggestions}
+            addressValid={addressValid}
+            postcodeValid={postcodeValid}
+            cityValid={cityValid}
+            touched={touched}
+            setAddress={setAddress}
+            setPostcode={setPostcode}
+            setCity={setCity}
+            onAddressBlur={handleAddressBlur}
+            setTouched={setTouched}
+            onSuggestionClick={handleSuggestionClick}
+            onNext={() => setStep(2)}
+            formId="step1"
+          />
+        </StepLayout>
+      )}
+      {step === 2 && (
+        <StepLayout
+          title="Obtenir mon estimation"
+          formId="step2"
+          onBack={() => setStep(1)}
+          nextDisabled={!isStep2Valid}
+        >
+          <PropertyTypeStep
+            propertyType={propertyType}
+            propertyTypeValid={propertyTypeValid}
+            touched={touched}
+            setPropertyType={setPropertyType}
+            setTouched={setTouched}
+            onNext={() => setStep(3)}
+            formId="step2"
+          />
+        </StepLayout>
+      )}
+      {step === 3 && (
+        <StepLayout
+          title="Obtenir mon estimation"
+          formId="step3"
+          onBack={() => setStep(2)}
+          nextDisabled={!isStep3Valid}
+        >
+          <PropertyStep
+            surface={surface}
+            rooms={rooms}
+            condition={condition}
+            totalSurface={totalSurface}
+            buildableSurface={buildableSurface}
               outdoorSpaces={outdoorSpaces}
               partyWalls={partyWalls}
               basement={basement}
@@ -332,46 +336,52 @@ export function EstimationForm({ step, setStep, onAddressSelect }: EstimationFor
               setDpe={setDpe}
               setYearBuilt={setYearBuilt}
               setHouseQuality={setHouseQuality}
-              setBrightness={setBrightness}
-              setNoise={setNoise}
-              setTransportProximity={setTransportProximity}
-              setRoofQuality={setRoofQuality}
-              setOccupation={setOccupation}
-              setUrgency={setUrgency}
-              setTouched={setTouched}
-              onBack={() => setStep(2)}
-              onNext={() => setStep(4)}
-              isValid={isStep3Valid}
-            />
-          )}
-          {step === 4 && (
-            <ContactStep
-              firstname={firstname}
-              lastname={lastname}
-              email={email}
-              phone={phone}
-              consent={consent}
+            setBrightness={setBrightness}
+            setNoise={setNoise}
+            setTransportProximity={setTransportProximity}
+            setRoofQuality={setRoofQuality}
+            setOccupation={setOccupation}
+            setUrgency={setUrgency}
+            setTouched={setTouched}
+            onNext={() => setStep(4)}
+            formId="step3"
+          />
+        </StepLayout>
+      )}
+      {step === 4 && (
+        <StepLayout
+          title="Obtenir mon estimation"
+          formId="step4"
+          onBack={() => setStep(3)}
+          nextDisabled={!isStep4Valid}
+        >
+          <ContactStep
+            firstname={firstname}
+            lastname={lastname}
+            email={email}
+            phone={phone}
+            consent={consent}
               firstnameValid={firstnameValid}
               lastnameValid={lastnameValid}
               emailValid={emailValid}
               phoneValid={phoneValid}
               touched={touched}
               setFirstname={setFirstname}
-              setLastname={setLastname}
-              setEmail={setEmail}
-              setPhone={setPhone}
-              setConsent={setConsent}
-              setTouched={setTouched}
-              onBack={() => setStep(3)}
-              onSubmit={handleSubmit}
-              isValid={isStep4Valid}
-            />
-          )}
+            setLastname={setLastname}
+            setEmail={setEmail}
+            setPhone={setPhone}
+            setConsent={setConsent}
+            setTouched={setTouched}
+            onSubmit={handleSubmit}
+            formId="step4"
+          />
+        </StepLayout>
+      )}
 
-          {/* Step 5 : Finished */}
-          {step === 5 && (
-            <>
-              <FinishStep
+      {/* Step 5 : Finished */}
+      {step === 5 && (
+        <>
+          <FinishStep
                 onFinish={() => {
                   setStep(1);
                   setAddress("");
@@ -427,7 +437,5 @@ export function EstimationForm({ step, setStep, onAddressSelect }: EstimationFor
             </>
           )}
         </AnimatePresence>
-      </CardContent>
-    </Card>
   );
 }
