@@ -1,4 +1,15 @@
 // src/lib/estimate.ts
+//
+// Cette fonction centralise la logique d'estimation immobilière.
+// Elle interroge les ventes DVF en base PostgreSQL, calcule un prix
+// médian au m² puis applique divers correctifs légers en fonction des
+// caractéristiques du bien.
+// Les étapes principales sont :
+//   1. récupération des ventes de la même commune et de même type
+//   2. exclusion des valeurs aberrantes
+//   3. calcul du prix médian au m²
+//   4. application de bonus/malus (piscine, état, etc.)
+//   5. renvoi du prix estimé et de statistiques sur l'échantillon
 import { pool } from "./db";
 
 // `pool` contains the PostgreSQL connection. Connection parameters are

@@ -1,5 +1,7 @@
 "use client";
 
+// Étape permettant de choisir le type de bien (maison, appartement, etc.).
+// Ce choix conditionne la sélection des ventes comparables.
 import { motion } from "framer-motion";
 import { Label } from "@/components/ui/label";
 import type { Touched } from "../types";

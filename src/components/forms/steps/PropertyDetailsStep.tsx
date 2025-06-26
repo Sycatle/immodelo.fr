@@ -1,5 +1,7 @@
 "use client";
 
+// Étape dédiée aux informations détaillées sur le bien (DPE, état, etc.).
+// Ces critères viennent moduler légèrement l'estimation finale.
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

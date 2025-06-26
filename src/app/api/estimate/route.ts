@@ -1,3 +1,6 @@
+// Route API /api/estimate
+// Reçoit les données du formulaire d'estimation et renvoie un prix estimé.
+// Un petit système de rate limiting empêche les abus.
 import { NextResponse } from "next/server";
 import estimatePrice from "@/lib/estimate";
 import { estimateInputSchema, ValidEstimateInput } from "@/lib/validation";

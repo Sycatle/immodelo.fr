@@ -1,5 +1,7 @@
 "use client";
 
+// Première étape du formulaire : saisie de l'adresse avec suggestions.
+// Permet de valider rapidement la ville et le code postal de l'utilisateur.
 import { useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";

@@ -1,5 +1,7 @@
 "use client";
 
+// Étape consacrée aux caractéristiques extérieures : parking, dépendances,
+// piscine, etc.
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 
