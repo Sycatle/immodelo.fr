@@ -49,7 +49,9 @@ export function PropertyTypeStep({
       }}
     >
       <div>
-        <Label className="p-1">Quel type de bien ?</Label>
+        <Label className="p-1">
+          Quel type de bien ? <span className="text-red-500">*</span>
+        </Label>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-2">
           {options.map((opt) => (
             <label

@@ -62,7 +62,7 @@ export function ContactStep({
       <div className="flex gap-4">
         <div className="w-1/2">
           <Label className="p-1" htmlFor="firstname">
-            Prénom
+            Prénom <span className="text-red-500">*</span>
           </Label>
           <Input
             id="firstname"
@@ -94,7 +94,7 @@ export function ContactStep({
         </div>
         <div className="w-1/2">
           <Label className="p-1" htmlFor="lastname">
-            Nom
+            Nom <span className="text-red-500">*</span>
           </Label>
           <Input
             id="lastname"
@@ -125,7 +125,7 @@ export function ContactStep({
       </div>
       <div>
         <Label className="p-1" htmlFor="email">
-          Email
+          Email <span className="text-red-500">*</span>
         </Label>
         <Input
           id="email"
@@ -154,7 +154,7 @@ export function ContactStep({
       </div>
       <div>
         <Label className="p-1" htmlFor="phone">
-          Téléphone
+          Téléphone <span className="text-red-500">*</span>
         </Label>
         <Input
           id="phone"
@@ -201,7 +201,7 @@ export function ContactStep({
           required
         />
         <label htmlFor="consent" className="text-sm text-gray-700 leading-snug">
-          J&apos;autorise Immodelo à me contacter. <br />
+          J&apos;autorise Immodelo à me contacter. <span className="text-red-500">*</span> <br />
           <span className="text-gray-500">
             Mes informations ne sont jamais transmises à des tiers.
           </span>

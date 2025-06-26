@@ -23,6 +23,7 @@ import {
   isValidRooms,
   isValidCondition,
   isValidYearBuilt,
+  isValidPositiveInt,
   isValidName,
   isValidEmail,
   isValidPhone,
@@ -189,6 +190,20 @@ export function EstimationForm({
   const roomsValid = isValidRooms(rooms);
   const conditionValid = isValidCondition(condition);
   const yearBuiltValid = isValidYearBuilt(yearBuilt);
+  const totalSurfaceValid = isValidPositiveInt(totalSurface);
+  const buildableSurfaceValid = isValidPositiveInt(buildableSurface);
+  const bathroomsValid = isValidPositiveInt(bathrooms);
+  const levelsValid = isValidPositiveInt(levels);
+  const parkingSpotsValid = !hasParking || isValidPositiveInt(parkingSpots);
+  const outbuildingsValid = !hasOutbuildings || isValidPositiveInt(outbuildings);
+  const dpeValid = dpe.trim().length > 0;
+  const houseQualityValid = houseQuality.trim().length > 0;
+  const brightnessValid = brightness.trim().length > 0;
+  const noiseValid = noise.trim().length > 0;
+  const transportProximityValid = transportProximity.trim().length > 0;
+  const roofQualityValid = roofQuality.trim().length > 0;
+  const occupationValid = occupation.trim().length > 0;
+  const urgencyValid = urgency.trim().length > 0;
   const firstnameValid = isValidName(firstname);
   const lastnameValid = isValidName(lastname);
   const emailValid = isValidEmail(email);
@@ -198,7 +213,24 @@ export function EstimationForm({
   const isStep1Valid = addressValid && postcodeValid && cityValid;
   const isStep2Valid = propertyTypeValid;
   const isStep3Valid =
-    surfaceValid && roomsValid && conditionValid && yearBuiltValid;
+    surfaceValid &&
+    totalSurfaceValid &&
+    buildableSurfaceValid &&
+    roomsValid &&
+    bathroomsValid &&
+    levelsValid &&
+    conditionValid &&
+    parkingSpotsValid &&
+    outbuildingsValid &&
+    dpeValid &&
+    yearBuiltValid &&
+    houseQualityValid &&
+    brightnessValid &&
+    noiseValid &&
+    transportProximityValid &&
+    roofQualityValid &&
+    occupationValid &&
+    urgencyValid;
   const isStep4Valid =
     firstnameValid && lastnameValid && emailValid && phoneValid && consent;
 

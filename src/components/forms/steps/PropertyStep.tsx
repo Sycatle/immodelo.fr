@@ -167,7 +167,7 @@ export function PropertyStep({
     >
       <div>
         <Label className="p-1" htmlFor="condition">
-          État général du bien
+          État général du bien <span className="text-red-500">*</span>
         </Label>
         <Select
           value={condition}
@@ -212,7 +212,7 @@ export function PropertyStep({
       </div>
       <div>
         <Label className="p-1" htmlFor="surface">
-          Surface habitable (m²)
+          Surface habitable (m²) <span className="text-red-500">*</span>
         </Label>
         <Input
           id="surface"
@@ -241,7 +241,7 @@ export function PropertyStep({
       </div>
       <div>
         <Label className="p-1" htmlFor="totalSurface">
-          Surface totale du terrain (m²)
+          Surface totale du terrain (m²) <span className="text-red-500">*</span>
         </Label>
         <Input
           id="totalSurface"
@@ -250,11 +250,12 @@ export function PropertyStep({
           onChange={(e) => setTotalSurface(e.target.value)}
           placeholder="300"
           autoComplete="off"
+          required
         />
       </div>
       <div>
         <Label className="p-1" htmlFor="buildableSurface">
-          Surface constructible restante (m²)
+          Surface constructible restante (m²) <span className="text-red-500">*</span>
         </Label>
         <Input
           id="buildableSurface"
@@ -263,11 +264,12 @@ export function PropertyStep({
           onChange={(e) => setBuildableSurface(e.target.value)}
           placeholder="50"
           autoComplete="off"
+          required
         />
       </div>
       <div>
         <Label className="p-1" htmlFor="rooms">
-          Nombre de pièces
+          Nombre de pièces <span className="text-red-500">*</span>
         </Label>
         <Input
           id="rooms"
@@ -296,7 +298,7 @@ export function PropertyStep({
       </div>
       <div>
         <Label className="p-1" htmlFor="bathrooms">
-          Nombre de salles de bain
+          Nombre de salles de bain <span className="text-red-500">*</span>
         </Label>
         <Input
           id="bathrooms"
@@ -305,11 +307,12 @@ export function PropertyStep({
           onChange={(e) => setBathrooms(e.target.value)}
           placeholder="1"
           autoComplete="off"
+          required
         />
       </div>
       <div>
         <Label className="p-1" htmlFor="levels">
-          Nombre de niveaux
+          Nombre de niveaux <span className="text-red-500">*</span>
         </Label>
         <Input
           id="levels"
@@ -318,11 +321,12 @@ export function PropertyStep({
           onChange={(e) => setLevels(e.target.value)}
           placeholder="2"
           autoComplete="off"
+          required
         />
       </div>
       <div>
         <Label className="p-1" htmlFor="outdoorSpaces">
-          Espace extérieur
+          Espace extérieur <span className="text-red-500">*</span>
         </Label>
         <div id="outdoorSpaces" className="flex flex-wrap gap-4 mt-1">
           {["Jardin", "Terrasse", "Balcon", "Aucun"].map((opt) => (
@@ -390,6 +394,7 @@ export function PropertyStep({
             placeholder="ex : 2"
             autoComplete="off"
             className="ml-4"
+            required
           />
         )}
         <label className="flex items-center gap-2 text-sm">
@@ -410,11 +415,12 @@ export function PropertyStep({
             placeholder="ex : 1"
             autoComplete="off"
             className="ml-4"
+            required
           />
         )}
         <div>
           <Label className="p-1" htmlFor="dpe">
-            Diagnostic de Performance Energétique
+            Diagnostic de Performance Energétique <span className="text-red-500">*</span>
           </Label>
           <Select value={dpe} onValueChange={setDpe}>
             <SelectTrigger id="dpe">
@@ -431,7 +437,7 @@ export function PropertyStep({
         </div>
         <div>
           <Label className="p-1" htmlFor="houseQuality">
-            Qualité de la maison
+            Qualité de la maison <span className="text-red-500">*</span>
           </Label>
           <Select value={houseQuality} onValueChange={setHouseQuality}>
             <SelectTrigger id="houseQuality">
@@ -446,7 +452,7 @@ export function PropertyStep({
         </div>
         <div>
           <Label className="p-1" htmlFor="brightness">
-            Luminosité
+            Luminosité <span className="text-red-500">*</span>
           </Label>
           <Select value={brightness} onValueChange={setBrightness}>
             <SelectTrigger id="brightness">
@@ -463,7 +469,7 @@ export function PropertyStep({
         </div>
         <div>
           <Label className="p-1" htmlFor="noise">
-            Calme
+            Calme <span className="text-red-500">*</span>
           </Label>
           <Select value={noise} onValueChange={setNoise}>
             <SelectTrigger id="noise">
@@ -480,7 +486,7 @@ export function PropertyStep({
         </div>
         <div>
           <Label className="p-1" htmlFor="transport">
-            Proximité des transports
+            Proximité des transports <span className="text-red-500">*</span>
           </Label>
           <Select
             value={transportProximity}
@@ -500,7 +506,7 @@ export function PropertyStep({
         </div>
         <div>
           <Label className="p-1" htmlFor="roofQuality">
-            Qualité de la toiture
+            Qualité de la toiture <span className="text-red-500">*</span>
           </Label>
           <Select value={roofQuality} onValueChange={setRoofQuality}>
             <SelectTrigger id="roofQuality">
@@ -543,7 +549,7 @@ export function PropertyStep({
       </div>
       <div>
         <Label className="p-1" htmlFor="yearBuilt">
-          Année de construction
+          Année de construction <span className="text-red-500">*</span>
         </Label>
         <Input
           id="yearBuilt"
@@ -562,6 +568,7 @@ export function PropertyStep({
           className={cn(
             localTouched.yearBuilt && !yearBuiltValid && "border-red-500"
           )}
+          required
         />
         {localTouched.yearBuilt && !yearBuiltValid && (
           <p
@@ -575,7 +582,7 @@ export function PropertyStep({
       </div>
       <div>
         <Label className="p-1" htmlFor="occupation">
-          Occupation du bien
+          Occupation du bien <span className="text-red-500">*</span>
         </Label>
         <Select value={occupation} onValueChange={setOccupation}>
           <SelectTrigger id="occupation">
@@ -590,7 +597,7 @@ export function PropertyStep({
       </div>
       <div>
         <Label className="p-1" htmlFor="urgency">
-          Urgence de vente
+          Urgence de vente <span className="text-red-500">*</span>
         </Label>
         <Select value={urgency} onValueChange={setUrgency}>
           <SelectTrigger id="urgency">

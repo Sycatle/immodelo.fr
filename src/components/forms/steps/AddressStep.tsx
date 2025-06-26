@@ -79,7 +79,7 @@ export function AddressStep({
     >
       <div className="relative" ref={wrapperRef}>
         <Label className="p-1" htmlFor="address">
-          Adresse
+          Adresse <span className="text-red-500">*</span>
         </Label>
         <Input
           id="address"
@@ -129,7 +129,7 @@ export function AddressStep({
       <div className="flex gap-4">
         <div className="w-1/2">
           <Label className="p-1" htmlFor="postcode">
-            Code postal
+            Code postal <span className="text-red-500">*</span>
           </Label>
           <Input
             id="postcode"
@@ -158,9 +158,9 @@ export function AddressStep({
           )}
         </div>
         <div className="w-1/2">
-          <Label className="p-1" htmlFor="city">
-            Ville
-          </Label>
+        <Label className="p-1" htmlFor="city">
+          Ville <span className="text-red-500">*</span>
+        </Label>
           <Input
             id="city"
             value={city}
