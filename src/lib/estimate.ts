@@ -1,16 +1,15 @@
 // src/lib/estimate.ts
 import dumps from "../../data/dvf_72.json" assert { type: "json" };
 
-// Défini le type de dump
 type DVFEntry = {
   code_postal: string;
+  commune: string;
   type_local: string;
   valeur_fonciere: string;
   surface_reelle_bati: string;
   nature_mutation?: string;
 };
 
-// Force le typage du JSON
 const typedDumps = dumps as DVFEntry[];
 
 export interface EstimateInput {
@@ -53,142 +52,131 @@ export interface EstimateResult {
   averagePricePerM2: number;
 }
 
+function getMedian(values: number[]): number {
+  const sorted = [...values].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 !== 0
+    ? sorted[mid]
+    : (sorted[mid - 1] + sorted[mid]) / 2;
+}
+
+function stdDev(arr: number[]): number {
+  const mean = arr.reduce((a, b) => a + b, 0) / arr.length;
+  const squareDiffs = arr.map((v) => (v - mean) ** 2);
+  return Math.sqrt(squareDiffs.reduce((a, b) => a + b, 0) / arr.length);
+}
+
+/**
+ * Normalize les noms de communes pour comparaison:
+ * - Supprime les accents
+ * - Remplace tirets et apostrophes par des espaces
+ * - Met en minuscules
+ * - Transforme "st" en "saint", "ste" en "sainte"
+ */
+function normalizeCommune(name: string): string {
+  return name
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .replace(/[-'’]/g, " ")
+    .toLowerCase()
+    .split(/\s+/)
+    .map((word) => {
+      if (word === "st") return "saint";
+      if (word === "ste") return "sainte";
+      return word;
+    })
+    .filter(Boolean)
+    .join(" ")
+    .trim();
+}
+
 export default function estimatePrice(
   data: EstimateInput
 ): EstimateResult | null {
   const targetSurface = parseFloat(String(data.surface));
+  if (isNaN(targetSurface) || targetSurface < 15) return null;
+
   const propertyType = data.propertyType.trim().toLowerCase();
+  const normalizedTargetCity = normalizeCommune(data.city);
   const postcode = data.postcode.trim();
 
-  if (isNaN(targetSurface)) return null;
-
-  let totalPricePerM2 = 0;
-  let count = 0;
-
-  for (const item of typedDumps) {
-    if (
-      item.nature_mutation?.toLowerCase() === "vente" &&
-      item.code_postal === postcode &&
-      item.type_local?.toLowerCase() === propertyType
-    ) {
+  // Étape 1 — ventes dans la même commune, même type
+  const relevantSales = typedDumps
+    .map((item) => {
       const surface = parseFloat(item.surface_reelle_bati?.replace(",", "."));
       const price = parseFloat(item.valeur_fonciere?.replace(",", "."));
-
+      const cityItem = normalizeCommune(item.commune ?? "");
       if (
+        item.nature_mutation?.toLowerCase() === "vente" &&
+        cityItem === normalizedTargetCity &&
+        item.code_postal === postcode &&
+        item.type_local?.toLowerCase() === propertyType &&
         !isNaN(surface) &&
         !isNaN(price) &&
-        surface >= targetSurface * 0.8 &&
-        surface <= targetSurface * 1.2 &&
+        surface > 10 &&
         price > 10000
       ) {
-        totalPricePerM2 += price / surface;
-        count += 1;
+        return { surface, price, pricePerM2: price / surface };
       }
-    }
-  }
+      return null;
+    })
+    .filter(Boolean) as {
+    surface: number;
+    price: number;
+    pricePerM2: number;
+  }[];
 
-  if (count === 0) return null;
+  if (relevantSales.length < 5) return null;
 
-  const avgPricePerM2 = totalPricePerM2 / count;
-  let estimatedPrice = avgPricePerM2 * targetSurface;
+  // Étape 2 — exclure les outliers
+  const pricesM2 = relevantSales.map((s) => s.pricePerM2);
+  const median = getMedian(pricesM2);
+  const deviation = stdDev(pricesM2);
+  const filtered = relevantSales.filter(
+    (s) => Math.abs(s.pricePerM2 - median) < deviation * 1.5
+  );
 
+  if (filtered.length < 3) return null;
+
+  // Calcul du prix médian au m² final
+  const finalMedianM2 = getMedian(filtered.map((s) => s.pricePerM2));
+  let estimatedPrice = finalMedianM2 * targetSurface;
+
+  // Étape 3 — pondérations légères
   let modifier = 0;
   switch (data.condition) {
     case "Comme neuf":
-      modifier += 0.05;
-      break;
-    case "Quelques travaux":
-      modifier -= 0.1;
+      modifier += 0.01;
       break;
     case "Travaux importants":
-      modifier -= 0.2;
+      modifier -= 0.03;
       break;
   }
+  if (data.pool) modifier += 0.01;
+  if (!data.sewer) modifier -= 0.01;
+  if (data.brightness === "Très clair") modifier += 0.01;
+  if (data.noise === "Très bruyant") modifier -= 0.02;
+  modifier = Math.max(-0.05, Math.min(0.05, modifier));
+  estimatedPrice *= 1 + modifier;
 
-  if (data.pool) modifier += 0.05;
-  if (data.exceptionalView) modifier += 0.05;
-  if (data.partyWalls) modifier -= 0.02;
-  if (data.basement) estimatedPrice += 5000;
-  if (data.parkingSpots) estimatedPrice += data.parkingSpots * 8000;
-  if (data.outbuildings) estimatedPrice += data.outbuildings * 5000;
-  if (!data.sewer) modifier -= 0.02;
+  // Étape 4 — bonus fixes minimes
+  if (data.parkingSpots)
+    estimatedPrice += Math.min(data.parkingSpots, 2) * 4000;
+  if (data.outbuildings)
+    estimatedPrice += Math.min(data.outbuildings, 2) * 3000;
 
-  switch (data.houseQuality) {
-    case "Supérieure":
-      modifier += 0.05;
-      break;
-    case "Inférieure":
-      modifier -= 0.05;
-      break;
+  // Étape 5 — bonus surface de terrain
+  if (data.totalSurface && data.totalSurface > targetSurface) {
+    const bonus = (data.totalSurface - targetSurface) * finalMedianM2 * 0.03;
+    estimatedPrice += bonus;
   }
 
-  switch (data.brightness) {
-    case "Très clair":
-      modifier += 0.03;
-      break;
-    case "Clair":
-      modifier += 0.02;
-      break;
-    case "Peu clair":
-      modifier -= 0.02;
-      break;
-    case "Sombre":
-      modifier -= 0.05;
-      break;
-  }
-
-  switch (data.noise) {
-    case "Très calme":
-      modifier += 0.03;
-      break;
-    case "Calme":
-      modifier += 0.02;
-      break;
-    case "Bruit":
-    case "Bruyant":
-      modifier -= 0.02;
-      break;
-    case "Très bruyant":
-      modifier -= 0.05;
-      break;
-  }
-
-  switch (data.transportProximity) {
-    case "Très proche":
-      modifier += 0.03;
-      break;
-    case "Proche":
-      modifier += 0.02;
-      break;
-    case "Éloigné":
-      modifier -= 0.02;
-      break;
-    case "Très éloigné":
-      modifier -= 0.05;
-      break;
-  }
-
-  switch (data.roofQuality) {
-    case "Refaite à neuf":
-      modifier += 0.03;
-      break;
-    case "À rénover":
-      modifier -= 0.05;
-      break;
-  }
-
-  estimatedPrice = estimatedPrice * (1 + modifier);
-
-  if (data.buildableSurface)
-    estimatedPrice += data.buildableSurface * avgPricePerM2 * 0.3;
-  if (data.totalSurface && data.totalSurface > targetSurface)
-    estimatedPrice += (data.totalSurface - targetSurface) * avgPricePerM2 * 0.1;
-
-  estimatedPrice = Math.round(estimatedPrice);
+  // Étape 6 — retrait des frais agence/notaire (7%)
+  estimatedPrice *= 0.93;
 
   return {
-    estimatedPrice,
-    similarSalesCount: count,
-    averagePricePerM2: Math.round(avgPricePerM2),
+    estimatedPrice: Math.round(estimatedPrice),
+    similarSalesCount: filtered.length,
+    averagePricePerM2: Math.round(finalMedianM2),
   };
 }

@@ -1,5 +1,4 @@
 const fs = require("fs");
-const path = require("path");
 const fetch = require("node-fetch");
 const unzipper = require("unzipper");
 const readline = require("readline");
@@ -19,17 +18,56 @@ const fieldsToKeep = [
   "voie",
 ];
 
-const ZIP_URL =
-  "https://static.data.gouv.fr/resources/demandes-de-valeurs-foncieres/20250406-003043/valeursfoncieres-2024.txt.zip";
-const ZIP_NAME = "valeursfoncieres-2024.txt.zip";
-const TXT_NAME = "valeursfoncieres-2024.txt";
+// Configuration des trois années à traiter
+const DATASETS = [
+  {
+    year: 2024,
+    zipUrl:
+      "https://static.data.gouv.fr/resources/demandes-de-valeurs-foncieres/20250406-003043/valeursfoncieres-2024.txt.zip",
+    zipName: "valeursfoncieres-2024.txt.zip",
+    txtName: "valeursfoncieres-2024.txt",
+  },
+  {
+    year: 2023,
+    zipUrl:
+      "https://static.data.gouv.fr/resources/demandes-de-valeurs-foncieres/20250406-003027/valeursfoncieres-2023.txt.zip",
+    zipName: "valeursfoncieres-2023.txt.zip",
+    txtName: "valeursfoncieres-2023.txt",
+  },
+  {
+    year: 2022,
+    zipUrl:
+      "https://static.data.gouv.fr/resources/demandes-de-valeurs-foncieres/20250406-003011/valeursfoncieres-2022.txt.zip",
+    zipName: "valeursfoncieres-2022.txt.zip",
+    txtName: "valeursfoncieres-2022.txt",
+  },
+];
+
 const OUTPUT_JSON = "dvf_72.json";
 
-// Télécharge le fichier ZIP
-async function downloadZip() {
-  console.log("Téléchargement...");
-  const res = await fetch(ZIP_URL);
-  const fileStream = fs.createWriteStream(ZIP_NAME);
+// Normalise une chaîne : supprime accents, remplace tirets/apostrophes, etc.
+function normalizeCommune(str) {
+  return str
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .replace(/[-'’]/g, " ")
+    .toLowerCase()
+    .split(/\s+/)
+    .map((word) => {
+      if (word === "st") return "saint";
+      if (word === "ste") return "sainte";
+      return word;
+    })
+    .filter(Boolean)
+    .join(" ")
+    .trim();
+}
+
+// Télécharge un ZIP dans un fichier local
+async function downloadZip(zipUrl, zipName) {
+  console.log(`Téléchargement ${zipName}...`);
+  const res = await fetch(zipUrl);
+  const fileStream = fs.createWriteStream(zipName);
   return new Promise((resolve, reject) => {
     res.body.pipe(fileStream);
     res.body.on("error", reject);
@@ -37,69 +75,79 @@ async function downloadZip() {
   });
 }
 
-// Décompresse le ZIP et extrait le fichier TXT
-async function unzipFile() {
-  console.log("Décompression...");
+// Décompresse un ZIP local
+async function unzipFile(zipName) {
+  console.log(`Décompression ${zipName}...`);
   return fs
-    .createReadStream(ZIP_NAME)
+    .createReadStream(zipName)
     .pipe(unzipper.Extract({ path: "." }))
     .promise();
 }
 
-// Lis le fichier TXT ligne par ligne et filtre par code postal
-async function filter72() {
-  console.log("Filtrage des lignes...");
-  const input = fs.createReadStream(TXT_NAME, { encoding: "utf-8" });
+// Filtrage des ventes 72 dans un fichier TXT donné
+async function filter72FromTxt(txtName) {
+  console.log(`Filtrage ${txtName}...`);
+  const input = fs.createReadStream(txtName, { encoding: "utf-8" });
   const rl = readline.createInterface({ input });
-
   const headers = [];
+  const seen = new Set();
   const filtered = [];
 
   for await (const line of rl) {
     const cols = line.split("|");
     if (!headers.length) {
-      headers.push(...cols); // première ligne = headers
+      headers.push(
+        ...cols.map((h) => normalizeCommune(h).replace(/\s+/g, "_"))
+      );
       continue;
-    }
-
-    // Fonction de slugification
-    function slugify(str) {
-      return str
-        .toLowerCase()
-        .replace(/[^\w\s]/g, "")
-        .replace(/\s+/g, "_")
-        .replace(/_+/g, "_")
-        .trim();
     }
 
     const obj = Object.fromEntries(
       headers
-        .map((h, i) => {
-          const key = slugify(h);
-          const value = cols[i]?.trim();
-          return [key, value];
-        })
-        .filter(([key, value]) => fieldsToKeep.includes(key) && value !== "")
+        .map((h, i) => [h, cols[i]?.trim()])
+        .filter(([key, value]) => fieldsToKeep.includes(key) && value)
     );
 
-    const cp = obj["code_postal"];
-    if (!cp) continue; // Ignore les lignes sans code postal
+    if (obj.commune) obj.commune = normalizeCommune(obj.commune);
+    const cp = obj.code_postal;
+    const mutation = obj.nature_mutation?.toLowerCase();
 
-    if (cp && cp.startsWith("72")) {
-      filtered.push(obj);
+    if (/^\d{5}$/.test(cp) && cp.startsWith("72") && mutation === "vente") {
+      const key = `${obj.no_voie}_${obj.type_de_voie}_${obj.voie}_${obj.surface_reelle_bati}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        filtered.push(obj);
+      }
     }
   }
 
-  console.log(`✅ ${filtered.length} lignes extraites`);
-  fs.writeFileSync(OUTPUT_JSON, JSON.stringify(filtered, null, 2), "utf-8");
+  console.log(`✅ ${filtered.length} ventes extraites de ${txtName}`);
+  return filtered;
 }
 
 (async () => {
   try {
-    await downloadZip();
-    await unzipFile();
-    await filter72();
-    console.log("✅ dvf_72.json prêt.");
+    const allFiltered = [];
+    for (const ds of DATASETS) {
+      await downloadZip(ds.zipUrl, ds.zipName);
+      await unzipFile(ds.zipName);
+      const yearFiltered = await filter72FromTxt(ds.txtName);
+      allFiltered.push(...yearFiltered);
+    }
+    console.log(`Total ventes uniques avant écriture: ${allFiltered.length}`);
+    // On pourrait dédupliquer encore sur l'ensemble :
+    const uniqueAll = [];
+    const seenAll = new Set();
+    for (const obj of allFiltered) {
+      const key = `${obj.no_voie}_${obj.type_de_voie}_${obj.voie}_${obj.surface_reelle_bati}_${obj.date_mutation}`;
+      if (!seenAll.has(key)) {
+        seenAll.add(key);
+        uniqueAll.push(obj);
+      }
+    }
+    console.log(`Total ventes uniques consolidées: ${uniqueAll.length}`);
+    fs.writeFileSync(OUTPUT_JSON, JSON.stringify(uniqueAll, null, 2), "utf-8");
+    console.log(`✅ ${OUTPUT_JSON} prêt avec ${uniqueAll.length} ventes.`);
   } catch (err) {
     console.error("❌ Erreur :", err);
   }
