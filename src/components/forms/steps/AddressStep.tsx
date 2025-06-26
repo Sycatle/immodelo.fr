@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef, useEffect } from "react";
-import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -47,7 +46,6 @@ export function AddressStep({
   isValid,
 }: AddressStepProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const [isAddressFocused, setIsAddressFocused] = useState(false);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -55,7 +53,7 @@ export function AddressStep({
         wrapperRef.current &&
         !wrapperRef.current.contains(event.target as Node)
       ) {
-        setIsAddressFocused(false);
+        // hide suggestions when clicking outside
       }
     };
 
