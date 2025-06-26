@@ -78,9 +78,27 @@ export function EstimationForm({ step, setStep, onAddressSelect }: EstimationFor
   const [propertyType, setPropertyType] = useState("");
   const [rooms, setRooms] = useState("");
   const [condition, setCondition] = useState("");
+  const [totalSurface, setTotalSurface] = useState("");
+  const [buildableSurface, setBuildableSurface] = useState("");
+  const [bathrooms, setBathrooms] = useState("");
+  const [levels, setLevels] = useState("");
   const [outdoorSpaces, setOutdoorSpaces] = useState<string[]>([]);
-  const [parking, setParking] = useState("");
+  const [partyWalls, setPartyWalls] = useState(false);
+  const [basement, setBasement] = useState(false);
+  const [hasParking, setHasParking] = useState(false);
+  const [parkingSpots, setParkingSpots] = useState("");
+  const [hasOutbuildings, setHasOutbuildings] = useState(false);
+  const [outbuildings, setOutbuildings] = useState("");
+  const [exceptionalView, setExceptionalView] = useState(false);
+  const [pool, setPool] = useState(false);
+  const [sewer, setSewer] = useState(false);
+  const [dpe, setDpe] = useState("");
   const [yearBuilt, setYearBuilt] = useState("");
+  const [houseQuality, setHouseQuality] = useState("");
+  const [brightness, setBrightness] = useState("");
+  const [noise, setNoise] = useState("");
+  const [transportProximity, setTransportProximity] = useState("");
+  const [roofQuality, setRoofQuality] = useState("");
   const [occupation, setOccupation] = useState("");
   const [urgency, setUrgency] = useState("");
 
@@ -159,12 +177,32 @@ export function EstimationForm({ step, setStep, onAddressSelect }: EstimationFor
       postcode,
       city,
       surface: parseFloat(surface),
+      totalSurface: totalSurface ? parseInt(totalSurface, 10) : undefined,
+      buildableSurface: buildableSurface
+        ? parseInt(buildableSurface, 10)
+        : undefined,
       propertyType,
       rooms: parseInt(rooms, 10),
+      bathrooms: bathrooms ? parseInt(bathrooms, 10) : undefined,
+      levels: levels ? parseInt(levels, 10) : undefined,
       condition,
       outdoorSpaces,
-      parking,
+      partyWalls,
+      basement,
+      parkingSpots: hasParking ? parseInt(parkingSpots || "0", 10) : undefined,
+      outbuildings: hasOutbuildings
+        ? parseInt(outbuildings || "0", 10)
+        : undefined,
+      exceptionalView,
+      pool,
+      sewer,
+      dpe,
       yearBuilt: parseInt(yearBuilt, 10),
+      houseQuality,
+      brightness,
+      noise,
+      transportProximity,
+      roofQuality,
       occupation,
       urgency,
       firstname,
@@ -239,9 +277,25 @@ export function EstimationForm({ step, setStep, onAddressSelect }: EstimationFor
               propertyType={propertyType}
               rooms={rooms}
               condition={condition}
+              totalSurface={totalSurface}
+              buildableSurface={buildableSurface}
               outdoorSpaces={outdoorSpaces}
-              parking={parking}
+              partyWalls={partyWalls}
+              basement={basement}
+              hasParking={hasParking}
+              parkingSpots={parkingSpots}
+              hasOutbuildings={hasOutbuildings}
+              outbuildings={outbuildings}
+              exceptionalView={exceptionalView}
+              pool={pool}
+              sewer={sewer}
+              dpe={dpe}
               yearBuilt={yearBuilt}
+              houseQuality={houseQuality}
+              brightness={brightness}
+              noise={noise}
+              transportProximity={transportProximity}
+              roofQuality={roofQuality}
               occupation={occupation}
               urgency={urgency}
               surfaceValid={surfaceValid}
@@ -251,12 +305,30 @@ export function EstimationForm({ step, setStep, onAddressSelect }: EstimationFor
               yearBuiltValid={yearBuiltValid}
               touched={touched}
               setSurface={setSurface}
+              setTotalSurface={setTotalSurface}
+              setBuildableSurface={setBuildableSurface}
               setPropertyType={setPropertyType}
               setRooms={setRooms}
+              setBathrooms={setBathrooms}
+              setLevels={setLevels}
               setCondition={setCondition}
               setOutdoorSpaces={setOutdoorSpaces}
-              setParking={setParking}
+              setPartyWalls={setPartyWalls}
+              setBasement={setBasement}
+              setHasParking={setHasParking}
+              setParkingSpots={setParkingSpots}
+              setHasOutbuildings={setHasOutbuildings}
+              setOutbuildings={setOutbuildings}
+              setExceptionalView={setExceptionalView}
+              setPool={setPool}
+              setSewer={setSewer}
+              setDpe={setDpe}
               setYearBuilt={setYearBuilt}
+              setHouseQuality={setHouseQuality}
+              setBrightness={setBrightness}
+              setNoise={setNoise}
+              setTransportProximity={setTransportProximity}
+              setRoofQuality={setRoofQuality}
               setOccupation={setOccupation}
               setUrgency={setUrgency}
               setTouched={setTouched}
@@ -303,8 +375,26 @@ export function EstimationForm({ step, setStep, onAddressSelect }: EstimationFor
                   setRooms("");
                   setCondition("");
                   setOutdoorSpaces([]);
-                  setParking("");
+                  setTotalSurface("");
+                  setBuildableSurface("");
+                  setBathrooms("");
+                  setLevels("");
+                  setPartyWalls(false);
+                  setBasement(false);
+                  setHasParking(false);
+                  setParkingSpots("");
+                  setHasOutbuildings(false);
+                  setOutbuildings("");
+                  setExceptionalView(false);
+                  setPool(false);
+                  setSewer(false);
+                  setDpe("");
                   setYearBuilt("");
+                  setHouseQuality("");
+                  setBrightness("");
+                  setNoise("");
+                  setTransportProximity("");
+                  setRoofQuality("");
                   setOccupation("");
                   setUrgency("");
                   setFirstname("");
