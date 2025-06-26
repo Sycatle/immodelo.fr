@@ -2,7 +2,6 @@
 
 import { useRef, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
@@ -24,7 +23,7 @@ interface AddressStepProps {
   setTouched: React.Dispatch<React.SetStateAction<Touched>>;
   onSuggestionClick: (index: number) => void;
   onNext: () => void;
-  isValid: boolean;
+  formId: string;
 }
 
 export function AddressStep({
@@ -43,7 +42,7 @@ export function AddressStep({
   setTouched,
   onSuggestionClick,
   onNext,
-  isValid,
+  formId,
 }: AddressStepProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
 
@@ -65,6 +64,7 @@ export function AddressStep({
 
   return (
     <motion.form
+      id={formId}
       key="step1"
       layout
       initial={{ x: 50, opacity: 0 }}
@@ -186,13 +186,6 @@ export function AddressStep({
           )}
         </div>
       </div>
-      <Button
-        type="submit"
-        disabled={!isValid}
-        className="w-full bg-orange-500 hover:bg-orange-600 text-white"
-      >
-        Étape suivante
-      </Button>
     </motion.form>
   );
 }

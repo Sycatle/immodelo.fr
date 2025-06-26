@@ -1,7 +1,6 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import type { Touched } from "../types";
 
@@ -12,7 +11,7 @@ interface PropertyTypeStepProps {
   setPropertyType: (v: string) => void;
   setTouched: React.Dispatch<React.SetStateAction<Touched>>;
   onNext: () => void;
-  onBack: () => void;
+  formId: string;
   isValid: boolean;
 }
 
@@ -32,11 +31,12 @@ export function PropertyTypeStep({
   setPropertyType,
   setTouched,
   onNext,
-  onBack,
+  formId,
   isValid,
 }: PropertyTypeStepProps) {
   return (
     <motion.form
+      id={formId}
       key="step-property-type"
       layout
       initial={{ x: 50, opacity: 0 }}
@@ -79,14 +79,6 @@ export function PropertyTypeStep({
             Type de bien invalide
           </p>
         )}
-      </div>
-      <div className="flex justify-between gap-4">
-        <Button type="button" variant="outline" onClick={onBack} className="w-1/2">
-          Retour
-        </Button>
-        <Button type="submit" disabled={!isValid} className="w-1/2 bg-orange-500 hover:bg-orange-600 text-white">
-          Étape suivante
-        </Button>
       </div>
     </motion.form>
   );

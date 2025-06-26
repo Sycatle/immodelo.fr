@@ -12,7 +12,7 @@ const Map = dynamic(
 );
 
 export default function EstimationPage() {
-  const [addressLabel, setAddressLabel] = useState("Le Mans");
+  const [, setAddressLabel] = useState("Le Mans");
   const [coords, setCoords] = useState<[number, number]>([48.0061, 0.1996]);
   const [step, setStep] = useState(1);
 

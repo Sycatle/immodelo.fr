@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -75,7 +74,7 @@ interface PropertyStepProps {
   setUrgency: (v: string) => void;
   setTouched: React.Dispatch<React.SetStateAction<Touched>>;
   onNext: () => void;
-  onBack: () => void;
+  formId: string;
   isValid: boolean;
 }
 
@@ -139,7 +138,7 @@ export function PropertyStep({
   setUrgency,
   setTouched,
   onNext,
-  onBack,
+  formId,
   isValid,
 }: PropertyStepProps) {
   const [localTouched, setLocalTouched] = useState({
@@ -151,6 +150,7 @@ export function PropertyStep({
 
   return (
     <motion.form
+      id={formId}
       key="step3"
       layout
       initial={{ x: 50, opacity: 0 }}
@@ -604,23 +604,6 @@ export function PropertyStep({
             <SelectItem value="Pas encore décidé">Pas encore décidé</SelectItem>
           </SelectContent>
         </Select>
-      </div>
-      <div className="flex justify-between gap-4">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={onBack}
-          className="w-1/2"
-        >
-          Retour
-        </Button>
-        <Button
-          type="submit"
-          disabled={!isValid || !localValid}
-          className="w-1/2 bg-orange-500 hover:bg-orange-600 text-white"
-        >
-          Étape suivante
-        </Button>
       </div>
     </motion.form>
   );
