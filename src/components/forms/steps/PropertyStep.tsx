@@ -53,7 +53,7 @@ interface PropertyStepProps {
   setBathrooms: (v: string) => void;
   setLevels: (v: string) => void;
   setCondition: (v: string) => void;
-  setOutdoorSpaces: (v: string[]) => void;
+  setOutdoorSpaces: React.Dispatch<React.SetStateAction<string[]>>;
   setPartyWalls: (v: boolean) => void;
   setBasement: (v: boolean) => void;
   setHasParking: (v: boolean) => void;
