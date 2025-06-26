@@ -1,5 +1,9 @@
 "use client";
 
+// Multi-step estimation form handling property details and contact information.
+// Validation and API calls are kept here while visual layout is split across
+// smaller step components.
+
 import { useState } from "react";
 import StepLayout from "./StepLayout";
 import { AnimatePresence } from "framer-motion";
@@ -24,6 +28,7 @@ import {
   isValidPhone,
   splitAddress,
 } from "@/lib/form-helpers";
+import { geocodeAddress } from "@/lib/utils";
 import { useAddressSuggestions } from "@/lib/useAddressSuggestions";
 import FinishStep from "./steps/FinishStep";
 
@@ -44,7 +49,7 @@ export function EstimationForm({
   setStep,
   onAddressSelect,
 }: EstimationFormProps) {
-  // Step 1 states
+  // --- Step 1 : property address ---
   const [address, setAddress] = useState("");
   const [postcode, setPostcode] = useState("");
   const [city, setCity] = useState("");
@@ -64,27 +69,14 @@ export function EstimationForm({
         isValidCity(parsed.city);
       if (isOk) {
         const query = `${parsed.street}, ${parsed.postcode} ${parsed.city}`;
-        fetch(
-          `https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(query)}&limit=1`
-        )
-          .then((res) => (res.ok ? res.json() : null))
-          .then((data) => {
-            const feature = data?.features?.[0];
-            if (feature) {
-              onAddressSelect(query, [
-                feature.geometry.coordinates[1],
-                feature.geometry.coordinates[0],
-              ]);
-            }
-          })
-          .catch(() => {
-            /* ignore errors */
-          });
+        geocodeAddress(query).then((coords) => {
+          if (coords) onAddressSelect(query, coords);
+        });
       }
     }
   };
 
-  // Step 2 states
+  // --- Step 2 : property details ---
   const [surface, setSurface] = useState("");
   const [propertyType, setPropertyType] = useState("");
   const [rooms, setRooms] = useState("");
@@ -113,7 +105,7 @@ export function EstimationForm({
   const [occupation, setOccupation] = useState("");
   const [urgency, setUrgency] = useState("");
 
-  // Step 3 states
+  // --- Step 3 : contact details ---
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
   const [email, setEmail] = useState("");
@@ -133,6 +125,59 @@ export function EstimationForm({
     phone: false,
     consent: false,
   });
+
+  /** Reset all fields to their initial state after the form is completed */
+  const resetForm = () => {
+    setStep(1);
+    setAddress("");
+    setPostcode("");
+    setCity("");
+    setSurface("");
+    setPropertyType("");
+    setRooms("");
+    setCondition("");
+    setOutdoorSpaces([]);
+    setTotalSurface("");
+    setBuildableSurface("");
+    setBathrooms("");
+    setLevels("");
+    setPartyWalls(false);
+    setBasement(false);
+    setHasParking(false);
+    setParkingSpots("");
+    setHasOutbuildings(false);
+    setOutbuildings("");
+    setExceptionalView(false);
+    setPool(false);
+    setSewer(false);
+    setDpe("");
+    setYearBuilt("");
+    setHouseQuality("");
+    setBrightness("");
+    setNoise("");
+    setTransportProximity("");
+    setRoofQuality("");
+    setOccupation("");
+    setUrgency("");
+    setFirstname("");
+    setLastname("");
+    setEmail("");
+    setPhone("");
+    setConsent(false);
+    setTouched({
+      address: false,
+      postcode: false,
+      city: false,
+      surface: false,
+      propertyType: false,
+      rooms: false,
+      firstname: false,
+      lastname: false,
+      email: false,
+      phone: false,
+      consent: false,
+    });
+  };
 
   // Validations using helper utilities
 
@@ -401,57 +446,7 @@ export function EstimationForm({
       {step === 5 && (
         <>
           <FinishStep
-            onFinish={() => {
-              setStep(1);
-              setAddress("");
-              setPostcode("");
-              setCity("");
-              setSurface("");
-              setPropertyType("");
-              setRooms("");
-              setCondition("");
-              setOutdoorSpaces([]);
-              setTotalSurface("");
-              setBuildableSurface("");
-              setBathrooms("");
-              setLevels("");
-              setPartyWalls(false);
-              setBasement(false);
-              setHasParking(false);
-              setParkingSpots("");
-              setHasOutbuildings(false);
-              setOutbuildings("");
-              setExceptionalView(false);
-              setPool(false);
-              setSewer(false);
-              setDpe("");
-              setYearBuilt("");
-              setHouseQuality("");
-              setBrightness("");
-              setNoise("");
-              setTransportProximity("");
-              setRoofQuality("");
-              setOccupation("");
-              setUrgency("");
-              setFirstname("");
-              setLastname("");
-              setEmail("");
-              setPhone("");
-              setConsent(false);
-              setTouched({
-                address: false,
-                postcode: false,
-                city: false,
-                surface: false,
-                propertyType: false,
-                rooms: false,
-                firstname: false,
-                lastname: false,
-                email: false,
-                phone: false,
-                consent: false,
-              });
-            }}
+            onFinish={resetForm}
           />
         </>
       )}
