@@ -4,7 +4,13 @@ import { Pool } from "pg";
 // Connection pool for PostgreSQL. Connection details are read from the
 // standard PG* environment variables which are already configured for the
 // Docker setup (see docker-compose.yml).
-const pool = new Pool();
+const pool = new Pool({
+  host:     "localhost",
+  port:     5433,
+  user:     "dvf",
+  password: "dvfpass",
+  database: "dvfdb",
+});
 
 type DVFEntry = {
   code_postal: string;
