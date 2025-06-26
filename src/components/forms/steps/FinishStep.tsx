@@ -1,5 +1,6 @@
 "use client";
 
+// Écran final affiché après réception de l'estimation.
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 

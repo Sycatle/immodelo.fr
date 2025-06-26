@@ -1,5 +1,7 @@
 "use client";
 
+// Étape recueillant les informations principales du bien : surface,
+// nombre de pièces, etc. Ces données servent de base au calcul.
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

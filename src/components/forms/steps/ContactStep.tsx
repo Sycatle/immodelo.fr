@@ -1,5 +1,7 @@
 "use client";
 
+// Dernière étape : collecte des coordonnées pour envoyer le résultat
+// d'estimation. Toutes les informations doivent être validées avant envoi.
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

@@ -1,8 +1,9 @@
 "use client";
 
-// Multi-step estimation form handling property details and contact information.
-// Validation and API calls are kept here while visual layout is split across
-// smaller step components.
+// Formulaire d'estimation en plusieurs étapes.
+// Chaque étape gère une partie des informations nécessaires
+// (adresse, caractéristiques du bien, coordonnées). Les validations
+// sont effectuées côté client avant l'appel à l'API d'estimation.
 
 import { useState } from "react";
 import StepLayout from "./StepLayout";
